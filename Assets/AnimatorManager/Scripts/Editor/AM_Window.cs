@@ -46,6 +46,7 @@ namespace AnimatorManager.Scripts.Editor {
         public void SaveSettings() {
             if (settingsAsset != null) {
                 settingsAsset.lastLoadedAnimatorData = data;
+                settingsAsset.lastSelectedTab = tab;
             }
         }
 
@@ -56,6 +57,7 @@ namespace AnimatorManager.Scripts.Editor {
 
             if (settingsAsset != null) {
                 data = settingsAsset.lastLoadedAnimatorData;
+                tab = settingsAsset.lastSelectedTab;
             }
             
         }
@@ -234,8 +236,6 @@ namespace AnimatorManager.Scripts.Editor {
                 EditorGUILayout.Toggle("VRChat SDK3 Exists", vrcSDKfound);
                 EditorGUILayout.Toggle("ChilloutVR CCK Exists", cvrCCKfound);
                 GUI.enabled = true;
-                //bool tempTestingBool = false;
-                //EditorGUILayout.Toggle("", tempTestingBool);
                 EditorGUILayout.EndScrollView();
             }
             GUILayout.EndArea();
@@ -252,7 +252,7 @@ namespace AnimatorManager.Scripts.Editor {
             }
             GUILayout.Button("Reset");
             if (GUILayout.Button("Save")) {
-                
+                SaveSettings();
             }
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
