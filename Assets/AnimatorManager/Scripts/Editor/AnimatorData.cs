@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
@@ -15,16 +15,13 @@ namespace AnimatorManager.Scripts.Editor {
 		public List<AnimatorLayer> layers = new List<AnimatorLayer>();
 		public List<AnimatorInput> inputs = new List<AnimatorInput>();
 
+		public ReorderableList layerlist;
+		public ReorderableList inputlist;
+
 		private void OnEnable() {
 			
 			// Testing entries
 			/*
-			layers.Add(new AnimatorLayer("Test 1", new List<AnimatorState>()));
-			layers.Add(new AnimatorLayer("Test 2", new List<AnimatorState>()));
-			layers.Add(new AnimatorLayer("Test 3", new List<AnimatorState>()));
-			layers.Add(new AnimatorLayer("Test 1", new List<AnimatorState>()));
-			layers.Add(new AnimatorLayer("Test 2", new List<AnimatorState>()));
-			layers.Add(new AnimatorLayer("Test 3", new List<AnimatorState>()));
 			layers.Add(new AnimatorLayer("Test 1", new List<AnimatorState>()));
 			layers.Add(new AnimatorLayer("Test 2", new List<AnimatorState>()));
 			layers.Add(new AnimatorLayer("Test 3", new List<AnimatorState>()));
@@ -33,6 +30,165 @@ namespace AnimatorManager.Scripts.Editor {
 			inputs.Add(new AnimatorInput());
 			inputs.Add(new AnimatorInput());
 			*/
+			
+
+			inputlist = new ReorderableList(inputs, typeof(AnimatorInput));
+			inputlist.drawElementCallback += DrawInputElementCallback;
+			inputlist.elementHeightCallback += InputElementHeightCallback;
+			inputlist.headerHeight = 0;
+
+			layerlist = new ReorderableList(layers, typeof(AnimatorLayer));
+			layerlist.drawElementCallback += DrawLayerElementCallback;
+			layerlist.elementHeightCallback += LayerElementHeightCallback;
+			layerlist.onAddCallback += ONAddCallback;
+			layerlist.headerHeight = 0;
+		}
+
+		// ####################### INPUT ################### //
+
+        private float InputElementHeightCallback(int index) {
+            var entity = inputs[index];
+
+            float height = EditorGUIUtility.singleLineHeight * 1.25f;
+            
+            if (entity.isNotCollapsed) {
+                height += EditorGUIUtility.singleLineHeight * 1.25f;
+                height += EditorGUIUtility.singleLineHeight * 1.25f;
+                if (entity.type != AnimatorControllerParameterType.Trigger) {
+                    height += EditorGUIUtility.singleLineHeight * 1.25f;
+                }
+
+                if (entity.type == AnimatorControllerParameterType.Float || entity.type == AnimatorControllerParameterType.Int) {
+                    height += entity.OptionsListHeight;
+                }
+                
+                height += EditorGUIUtility.singleLineHeight * 0.5f;
+            }
+
+            return height;
+        }
+
+        private void DrawInputElementCallback(Rect rect, int index, bool isactive, bool isfocused) {
+            var entity = inputs[index];
+            
+            rect.y += 2;
+            rect.x += 12;
+            rect.width -= 12;
+            Rect _rect = new Rect(rect.x, rect.y, 100, EditorGUIUtility.singleLineHeight);
+
+            entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, "Name", true);
+            _rect.x += 100;
+            _rect.width = rect.width - 100;
+            entity.name = EditorGUI.TextField(_rect, entity.name);
+
+            if (entity.isNotCollapsed) {
+
+                rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+                _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+                EditorGUI.TextField(_rect, "Parameter Name", entity.parameterName);
+                
+                
+                rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+                _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+                entity.type = (AnimatorControllerParameterType)EditorGUI.EnumPopup(_rect, "Type", entity.type);
+                
+                
+                rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+                _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+                //EditorGUI.Popup(_rect, "Default Value", entity.defaultOptionIndex, entity.GetOptionNames()); // Dropdown for default value
+                switch (entity.type) {
+                    case AnimatorControllerParameterType.Float:
+                        _rect.width -= 100;
+                        entity.defaultOptionIndex = EditorGUI.Popup(_rect, "Default Option", entity.defaultOptionIndex, entity.GetOptionNames()); // Dropdown for default value
+                        _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+                        _rect.width = 90;
+                        _rect.x = rect.x + (rect.width - 90);
+                        entity.defaultOptionIndex = EditorGUI.IntField(_rect, entity.defaultOptionIndex);
+                        break;
+                    case AnimatorControllerParameterType.Int:
+                        _rect.width -= 100;
+                        entity.defaultOptionIndex = EditorGUI.Popup(_rect, "Default Option", entity.defaultOptionIndex, entity.GetOptionNames()); // Dropdown for default value
+                        _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+                        _rect.width = 90;
+                        _rect.x = rect.x + (rect.width - 90);
+                        entity.defaultOptionIndex = EditorGUI.IntField(_rect, entity.defaultOptionIndex);
+                        break;
+                    case AnimatorControllerParameterType.Bool:
+                        entity.defaultBool = EditorGUI.Toggle(_rect, "Default Value", entity.defaultBool);
+                        break;
+                    default:
+                        break;
+                }
+                if (entity.optionsRList != null && (entity.type == AnimatorControllerParameterType.Float || entity.type == AnimatorControllerParameterType.Int)) {
+                    rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+                    _rect = new Rect(rect.x, rect.y, rect.width, entity.OptionsListHeight);
+                    entity.optionsRList.DoList(_rect);
+                }
+            }
+        }
+        
+        // ############### LAYERS ################ //
+
+        private float LayerElementHeightCallback(int index) {
+            var entity = layers[index];
+
+            float height = EditorGUIUtility.singleLineHeight * 1.25f;
+            
+            if (entity.isNotCollapsed) {
+                height += EditorGUIUtility.singleLineHeight * 1.25f;
+                height += entity.statesRList.GetHeight();
+                
+                height += EditorGUIUtility.singleLineHeight * 0.5f;
+            }
+
+            return height;
+        }
+
+        private void DrawLayerElementCallback(Rect rect, int index, bool isactive, bool isfocused) {
+            var entity = layers[index];
+            
+            rect.y += 2;
+            rect.x += 12;
+            rect.width -= 12;
+            Rect _rect = new Rect(rect.x, rect.y, 100, EditorGUIUtility.singleLineHeight);
+
+            entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, "Name", true);
+            _rect.x += 100;
+            _rect.width = rect.width - 100;
+            entity.name = EditorGUI.TextField(_rect, entity.name);
+
+            if (entity.isNotCollapsed) {
+
+	            int previousPrimaryInputIndex = entity.primaryInputIndex;
+	            
+                rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+                _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+                entity.primaryInputIndex = EditorGUI.Popup(_rect, "Primary Input", entity.primaryInputIndex, GetInputNames());
+
+                if (previousPrimaryInputIndex != entity.primaryInputIndex) {
+	                entity.SetStatesFromInputOptions(inputs[entity.primaryInputIndex].options);
+                }
+
+                rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+                _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+                if (entity.states != null) {
+                    entity.statesRList.DoList(_rect);
+                }
+            }
+        }
+
+        private void ONAddCallback(ReorderableList list) {
+	        AnimatorLayer layer = new AnimatorLayer();
+	        if (inputs.Count > 0) {
+		        layer.SetStatesFromInputOptions(inputs[0].options);
+	        }
+	        layers.Add(layer);
+        }
+        
+        // ####################### other ######################### //
+
+		public string[] GetInputNames() {
+			return inputs.Select(input => input.name).ToArray();
 		}
 
 		public void LoadAnimator(AnimatorController anim) {
@@ -48,218 +204,5 @@ namespace AnimatorManager.Scripts.Editor {
 				inputs.Add(input);
 			}
 		}
-	}
-
-	public class AnimatorLayer {
-		public string name;
-
-		public bool isNotCollapsed;
-
-		public List<AnimatorState> states;
-
-		public AnimatorLayer(string name, List<AnimatorState> states) {
-			this.name = name;
-			this.states = states;
-		}
-
-		public void Draw() {
-			isNotCollapsed = EditorGUILayout.Foldout(isNotCollapsed, name);
-			if (isNotCollapsed) {
-				GUILayout.Label("stuff here");
-			}
-		}
-
-		public List<string> GetStateNames() {
-			List<string> names = new List<string>();
-			foreach (var state in states) {
-				names.Add(state.name);
-			}
-
-			return names;
-		}
-	}
-
-	public class AnimatorState {
-		public string name;
-		public int value;
-	}
-
-	public class AnimatorInput {
-		public string name;
-		public bool isNotCollapsed;
-		private string m_parameterName;
-		public string parameterName {
-			get {
-				if (m_parameterName == null) {
-					return name;
-				}
-				else {
-					return m_parameterName;
-				}
-			}
-			set {
-				m_parameterName = value;
-			}
-		}
-		
-		public float optionsListHeight { get { return optionsRList.GetHeight(); } }
-		
-		public AnimatorControllerParameterType type = AnimatorControllerParameterType.Bool;
-		public List<InputOption> options = new List<InputOption>();
-		public ReorderableList optionsRList;
-		public float defaultFloat;
-		public int defaultInt;
-		public bool defaultBool;
-		public int defaultOptionIndex;
-
-		public AnimatorInput() {
-			optionsRList = new ReorderableList(options, typeof(InputOption));
-			optionsRList.drawElementCallback += DrawElementCallback;
-			optionsRList.drawHeaderCallback += DrawHeaderCallback;
-			optionsRList.onAddCallback += OnAddCallback;
-		}
-
-		private void OnAddCallback(ReorderableList list) {
-			var temp = new InputOption();
-			switch (type) {
-				case AnimatorControllerParameterType.Float: {
-					float lastValue = 0;
-					float secondLastValue = -1;
-					if (list.list.Count >= 2) {
-						InputOption secondLast = (InputOption) list.list[list.list.Count - 2];
-						secondLastValue = secondLast?.floatValue ?? 1;
-					}
-					if (list.list.Count >= 1) {
-						InputOption last = (InputOption) list.list[list.list.Count - 1];
-						lastValue = last?.floatValue ?? 0;
-					} else {
-						secondLastValue = 0;
-					}
-					float distanceBetweenLastTwoValues = lastValue - secondLastValue;
-					temp.floatValue = lastValue + distanceBetweenLastTwoValues;
-					break;
-				}
-				case AnimatorControllerParameterType.Int: {
-					int lastValue = 0;
-					int secondLastValue = -1;
-					if (list.list.Count >= 2) {
-						InputOption secondLast = (InputOption) list.list[list.list.Count - 2];
-						secondLastValue = secondLast?.intValue ?? 1;
-					}
-					if (list.list.Count >= 1) {
-						InputOption last = (InputOption) list.list[list.list.Count - 1];
-						lastValue = last?.intValue ?? 0;
-					} else {
-						secondLastValue = 0;
-					}
-					int distanceBetweenLastTwoValues = lastValue - secondLastValue;
-					temp.intValue = lastValue + distanceBetweenLastTwoValues;
-					break;
-				}
-				case AnimatorControllerParameterType.Bool:
-					break;
-				case AnimatorControllerParameterType.Trigger:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-			list.list.Add(temp);
-		}
-
-		private void DrawHeaderCallback(Rect rect) {
-			rect.y += 2;
-			rect.x += 12;
-			rect.width += 30;
-			Rect _rect = new Rect(rect.x, rect.y, rect.width - 100, EditorGUIUtility.singleLineHeight);
-			
-			EditorGUI.LabelField(_rect, "Name");
-			
-			_rect = new Rect(rect.width -90, rect.y, 90, EditorGUIUtility.singleLineHeight);
-			
-			EditorGUI.LabelField(_rect, "Value");
-		}
-
-		private void DrawElementCallback(Rect rect, int index, bool isactive, bool isfocused) {
-
-			rect.y += 2;
-			Rect _rect = new Rect(rect);
-			_rect.height = EditorGUIUtility.singleLineHeight;
-			_rect.width += -150;
-			
-			options[index].name = EditorGUI.TextField(_rect, options[index].name);
-			
-			_rect.x = _rect.x + _rect.width + 50;
-			_rect.width = 100;
-			
-			
-			switch (type) {
-				case AnimatorControllerParameterType.Float:
-					options[index].floatValue = EditorGUI.FloatField(_rect, options[index].floatValue);
-					break;
-				case AnimatorControllerParameterType.Int:
-					options[index].intValue = EditorGUI.IntField(_rect, options[index].intValue);
-					break;
-				default:
-					Debug.Log("Wrong Type");
-					break;
-			}
-		}
-
-		public void Draw() {
-			//isNotCollapsed = EditorGUILayout.Foldout(isNotCollapsed, name);
-			//if (isNotCollapsed) {
-				//EditorGUILayout.TextField("Name", name);
-				EditorGUILayout.TextField("Parameter Name", m_parameterName);
-				type = (AnimatorControllerParameterType)EditorGUILayout.EnumPopup(type.ToString(), type);
-				//EditorGUILayout.Popup(); // Dropdown for default value
-				switch (type) {
-					case AnimatorControllerParameterType.Float:
-						defaultFloat = EditorGUILayout.FloatField("Default Value", defaultFloat);
-						break;
-					case AnimatorControllerParameterType.Int:
-						defaultInt = EditorGUILayout.IntField("Default Value", defaultInt);
-						break;
-					case AnimatorControllerParameterType.Bool:
-						defaultBool = EditorGUILayout.Toggle("Default Value", defaultBool);
-						break;
-					default:
-						break;
-				}
-				if (optionsRList != null) {
-					optionsRList.DoLayoutList();
-				}
-			//}
-		}
-
-		public string[] GetOptionNames() {
-
-			List<string> names = new List<string>();
-
-			foreach (var option in options) {
-				if (String.IsNullOrEmpty(option.name)) {
-					switch (type) {
-						case AnimatorControllerParameterType.Float:
-							names.Add(option.floatValue.ToString());
-							break;
-						case AnimatorControllerParameterType.Int:
-							names.Add(option.intValue.ToString());
-							break;
-						default:
-							Debug.Log("Wrong Type");
-							break;
-					}
-				}else {
-					names.Add(option.name);
-				}
-			}
-
-			return names.ToArray();
-		}
-	}
-
-	public class InputOption {
-		public string name;
-		public int intValue;
-		public float floatValue;
 	}
 }
