@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
@@ -7,18 +8,38 @@ using UnityEngine;
 namespace AnimatorManager.Scripts.Editor {
 	public class AnimatorLayer {
 		public string name;
+		public string Name {
+			get {
+				if (String.IsNullOrEmpty(name)) {
+					if (_associatedData.inputs.Count > 0) {
+						return _associatedData.inputs[primaryInputIndex].Name;
+					} else {
+						return "Layer " + _associatedData.layers.Count;
+					}
+				} else {
+					return name;
+				}
+			}
+			set => name = value;
+		}
 		public bool isNotCollapsed = true;
 		public int primaryInputIndex;
 		public List<AnimatorState> states;
 		public ReorderableList statesRList;
 
 		public bool overrideExistingLayers;
+		private AnimatorData _associatedData;
 
-		public AnimatorLayer(string name, List<AnimatorState> states) {
+		public AnimatorLayer(string name, List<AnimatorState> states, AnimatorData data) {
+			_associatedData = data;
 			this.name = name;
 			this.states = states;
 
 			InitReorderableList();
+		}
+
+		public AnimatorLayer(AnimatorData data) : this("", new List<AnimatorState>(), data) {
+			
 		}
 
 		private void InitReorderableList() {
@@ -26,10 +47,6 @@ namespace AnimatorManager.Scripts.Editor {
 			statesRList.draggable = false;
 			statesRList.drawElementCallback += DrawElementCallback;
 			statesRList.drawHeaderCallback += DrawHeaderCallback;
-		}
-
-		public AnimatorLayer() : this("", new List<AnimatorState>()) {
-			
 		}
 
 		public void SetStatesFromInputOptions(List<InputOption> inputOptions) {

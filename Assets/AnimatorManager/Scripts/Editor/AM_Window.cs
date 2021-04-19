@@ -21,24 +21,12 @@ namespace AnimatorManager.Scripts.Editor {
             }
         
         }
-
-        private AnimatorManagerSettings settingsAsset;
         
         public AnimatorController source;
 
-        // saved settings:
-        private int tab = 0;
-        private Vector2 tab1scroll;
-        private Vector2 tab2scroll;
-        private Vector2 tab3scroll;
+        // settings:
+        public AnimatorManagerSettings settingsAsset;
         public AnimatorData data;
-        
-        // previousValue of those
-        private int tab_prev;
-        private Vector2 tab1scroll_prev;
-        private Vector2 tab2scroll_prev;
-        private Vector2 tab3scroll_prev;
-        public AnimatorData data_prev;
 
         [MenuItem("Tools/Animator Manager")]
         static void Init() {
@@ -48,34 +36,14 @@ namespace AnimatorManager.Scripts.Editor {
             window.Show();
         }
 
-        public void SaveSettings() {
-            if (settingsAsset != null) {
-                settingsAsset.lastLoadedAnimatorData = data;
-                settingsAsset.lastSelectedTab = tab;
-                
-                Debug.Log("Settings Saved:\n" +
-                          "Data: " + AssetDatabase.GetAssetPath(settingsAsset.lastLoadedAnimatorData) + "\n" +
-                          "Selected Tab: " + settingsAsset.lastSelectedTab);
-            }
-
-        }
-
-        public void LoadSettings() {
+        private void LoadSettings() {
             if (settingsAsset is null) {
                 settingsAsset = Resources.Load<AnimatorManagerSettings>("_AM_Settings");
-            }
-
-            if (settingsAsset != null) {
-                data = settingsAsset.lastLoadedAnimatorData;
-                tab = settingsAsset.lastSelectedTab;
-                
-                Debug.Log("Settings Loaded:\n" +
-                          "Data: " + AssetDatabase.GetAssetPath(data) + "\n" +
-                          "Selected Tab: " + tab);
+                Debug.Log("Settings Loaded:\n" + settingsAsset);
             }
         }
 
-        public AnimatorData LookupDataForAnimator(AnimatorController controller) {
+        private static AnimatorData LookupDataForAnimator(AnimatorController controller) {
              List<AnimatorData> foundDatas = new List<AnimatorData>(Resources.FindObjectsOfTypeAll<AnimatorData>());
             if (foundDatas.Count == 0) return null;
             foreach (var animatorData in foundDatas) {
@@ -92,11 +60,6 @@ namespace AnimatorManager.Scripts.Editor {
             cvrCCKfound = AssetDatabase.FindAssets("CCK_CVRAvatarEditor", null).Length > 0;
             
             LoadSettings();
-
-            if (data == null) {
-                data = CreateInstance<AnimatorData>();
-                SaveSettings();
-            }
         }
 
         void OnGUI() {
@@ -106,30 +69,32 @@ namespace AnimatorManager.Scripts.Editor {
         
             //Tab Button Group
 
-            tab = GUILayout.Toolbar(tab, new[] {"Animations", "Input", "Settings"});
+            settingsAsset.selectedTab = GUILayout.Toolbar(settingsAsset.selectedTab, new[] {"Animations", "Input", "Settings"});
         
-            GUILayout.BeginArea(new Rect(0, 65, position.width, position.height - 65 - EditorGUIUtility.singleLineHeight * 2));
             //pages
-            if (tab == 0) {
-                tab1scroll = EditorGUILayout.BeginScrollView(tab1scroll);
-                data.layerlist.DoLayoutList();
-                EditorGUILayout.EndScrollView();
+            GUILayout.BeginArea(new Rect(0, 65, position.width, position.height - 65 - EditorGUIUtility.singleLineHeight * 2));
+            if (settingsAsset.animatorData != null) {
+                if (settingsAsset.selectedTab == 0) {
+                    settingsAsset.animatorData.tab1scroll = EditorGUILayout.BeginScrollView(settingsAsset.animatorData.tab1scroll);
+                    settingsAsset.animatorData.layerlist.DoLayoutList();
+                    EditorGUILayout.EndScrollView();
+                }
+            
+                if (settingsAsset.selectedTab == 1) {
+                    settingsAsset.animatorData.tab2scroll = EditorGUILayout.BeginScrollView(settingsAsset.animatorData.tab2scroll);
+                    settingsAsset.animatorData.inputlist.DoLayoutList();
+                    EditorGUILayout.EndScrollView();
+                }
             }
         
-            if (tab == 1) {
-                tab2scroll = EditorGUILayout.BeginScrollView(tab2scroll);
-                data.inputlist.DoLayoutList();
-                EditorGUILayout.EndScrollView();
-            }
-        
-            if (tab == 2) {
-                tab3scroll = EditorGUILayout.BeginScrollView(tab3scroll);
+            if (settingsAsset.selectedTab == 2) {
+                settingsAsset.tab3scroll = EditorGUILayout.BeginScrollView(settingsAsset.tab3scroll);
                 GUI.enabled = false;
                 EditorGUILayout.Toggle("VRChat SDK3 Exists", vrcSDKfound);
                 EditorGUILayout.Toggle("ChilloutVR CCK Exists", cvrCCKfound);
                 GUI.enabled = true;
                 EditorGUILayout.LabelField("Import", Styles.HeaderLabel);
-                EditorGUILayout.Toggle("Determine Primary Input from most common Transition condition", true);
+                settingsAsset.get1stInputFromCommonCondition = EditorGUILayout.Toggle("Determine Primary Input from most common Transition condition", settingsAsset.get1stInputFromCommonCondition);
                 EditorGUILayout.EndScrollView();
             }
             GUILayout.EndArea();
@@ -141,36 +106,40 @@ namespace AnimatorManager.Scripts.Editor {
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
             source = (AnimatorController)EditorGUILayout.ObjectField("Animator", source, typeof(AnimatorController), true);
-            if (source != null && source != data.referenceAnimator) {
-                LoadAnimator(source, LookupDataForAnimator(source));
+            if (source != null) {
+                if (settingsAsset.animatorData == null) {
+                    LoadAnimator(source, LookupDataForAnimator(source));
+                }
+                if (source != settingsAsset.animatorData.referenceAnimator) {
+                    LoadAnimator(source, LookupDataForAnimator(source));
+                }
             }
-            if (GUILayout.Button("Reset")) {
+            if (GUILayout.Button("Reset to Original State")) {
                 if (EditorUtility.DisplayDialog("Reset Animator Data", "Do you really want to reset the Animator Data?\nThe original Animator state will be restored.", "Yes", "No")) {
-                    data.Reset();
+                    settingsAsset.animatorData.Reset();
+                }
+            }
+            if (GUILayout.Button("Clear")) {
+                if (EditorUtility.DisplayDialog("Empty Animator Data", "Do you really want to clear the Animator Data?\n" +
+                                                                       "The original Animator will not be touched.\n" +
+                                                                       "Only the data for this tool will be deleted.", "Yes", "No")) {
+                    settingsAsset.animatorData.Clear();
                 }
             }
             if (GUILayout.Button("Save")) {
-                data.Save();
+                settingsAsset.animatorData.Save();
             }
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
-            
-            
-            // if any settings change, save:
-            bool aSettingHasCHanged = (tab_prev != tab) || (data_prev != data);
-            
-            if (aSettingHasCHanged) {
-                SaveSettings();
-                tab_prev = tab;
-                data_prev = data;
-            }
         }
 
         private void LoadAnimator(AnimatorController anim, AnimatorData dat = null) {
-            if (dat != null) {
-                data.LoadAnimator(anim);
+            if (dat == null) {
+                settingsAsset.animatorData = CreateInstance<AnimatorData>();
+                AssetDatabase.CreateAsset(settingsAsset.animatorData, AssetDatabase.GenerateUniqueAssetPath(settingsAsset.SavedDataPath + anim.name + ".asset"));
+                settingsAsset.animatorData.LoadAnimator(anim);
             } else {
-                data = dat;
+                settingsAsset.animatorData = dat;
             }
         }
     }

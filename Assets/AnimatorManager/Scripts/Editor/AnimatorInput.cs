@@ -7,20 +7,23 @@ using AnimatorControllerParameterType = UnityEngine.AnimatorControllerParameterT
 
 namespace AnimatorManager.Scripts.Editor {
 	public class AnimatorInput {
-		public string name;
-		public bool isNotCollapsed = true;
-		private string m_parameterName;
-		public string parameterName {
+		private string name;
+		public string Name {
 			get {
-				if (m_parameterName == null) {
+				if (String.IsNullOrEmpty(name)) {
+					if (String.IsNullOrEmpty(parameterName)) {
+						return "Input " + _associatedData.inputs.Count;
+					} else {
+						return parameterName;
+					}
+				} else {
 					return name;
 				}
-				else {
-					return m_parameterName;
-				}
 			}
-			set => m_parameterName = value;
+			set => name = value;
 		}
+		public bool isNotCollapsed = true;
+		public string parameterName;
 		
 		public float OptionsListHeight => optionsRList.GetHeight();
 
@@ -31,9 +34,11 @@ namespace AnimatorManager.Scripts.Editor {
 		public int defaultInt;
 		public bool defaultBool;
 		public int defaultOptionIndex;
+		private AnimatorData _associatedData;
 
-		public AnimatorInput() {
-			name = "Input " + AM_Window.Instance.data.inputs.Count;
+		public AnimatorInput(AnimatorData data) {
+			_associatedData = data;
+			name = "Input " + _associatedData.inputs.Count;
 			
 			optionsRList = new ReorderableList(options, typeof(InputOption));
 			optionsRList.drawElementCallback += DrawElementCallback;

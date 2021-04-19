@@ -17,6 +17,9 @@ namespace AnimatorManager.Scripts.Editor {
 
 		public ReorderableList layerlist;
 		public ReorderableList inputlist;
+		
+		public Vector2 tab1scroll;
+		public Vector2 tab2scroll;
 
 		private void OnEnable() {
 			
@@ -35,12 +38,13 @@ namespace AnimatorManager.Scripts.Editor {
 			inputlist = new ReorderableList(inputs, typeof(AnimatorInput));
 			inputlist.drawElementCallback += DrawInputElementCallback;
 			inputlist.elementHeightCallback += InputElementHeightCallback;
+			inputlist.onAddCallback += ONInputAddCallback;
 			inputlist.headerHeight = 0;
 
 			layerlist = new ReorderableList(layers, typeof(AnimatorLayer));
 			layerlist.drawElementCallback += DrawLayerElementCallback;
 			layerlist.elementHeightCallback += LayerElementHeightCallback;
-			layerlist.onAddCallback += ONAddCallback;
+			layerlist.onAddCallback += ONLayerAddCallback;
 			layerlist.headerHeight = 0;
 		}
 
@@ -79,13 +83,13 @@ namespace AnimatorManager.Scripts.Editor {
             entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, "Name", true);
             _rect.x += 100;
             _rect.width = rect.width - 100;
-            entity.name = EditorGUI.TextField(_rect, entity.name);
+            entity.Name = EditorGUI.TextField(_rect, entity.Name);
 
             if (entity.isNotCollapsed) {
 
                 rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
                 _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
-                EditorGUI.TextField(_rect, "Parameter Name", entity.parameterName);
+                entity.parameterName = EditorGUI.TextField(_rect, "Parameter Name", entity.parameterName);
                 
                 
                 rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
@@ -126,6 +130,11 @@ namespace AnimatorManager.Scripts.Editor {
                 }
             }
         }
+
+        private void ONInputAddCallback(ReorderableList list) {
+	        AnimatorInput input = new AnimatorInput(this);
+	        inputs.Add(input);
+        }
         
         // ############### LAYERS ################ //
 
@@ -135,6 +144,7 @@ namespace AnimatorManager.Scripts.Editor {
             float height = EditorGUIUtility.singleLineHeight * 1.25f;
             
             if (entity.isNotCollapsed) {
+                height += EditorGUIUtility.singleLineHeight * 1.25f;
                 height += EditorGUIUtility.singleLineHeight * 1.25f;
                 height += entity.statesRList.GetHeight();
                 
@@ -150,14 +160,11 @@ namespace AnimatorManager.Scripts.Editor {
             rect.y += 2;
             rect.x += 12;
             rect.width -= 12;
-            Rect _rect = new Rect(rect.x, rect.y, 100, EditorGUIUtility.singleLineHeight);
+            Rect _rect = new Rect(rect.x, rect.y, rect.width - 200, EditorGUIUtility.singleLineHeight);
 
-            entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, "Name", true);
-            _rect.x += 100;
-            _rect.width = rect.width - 200;
-            entity.name = EditorGUI.TextField(_rect, entity.name);
+            entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, entity.Name, true);
 
-            _rect.x += _rect.width + 10;
+            _rect.x += _rect.width + 110;
             _rect.width = 70;
             EditorGUI.LabelField(_rect, "Override");
             
@@ -166,6 +173,10 @@ namespace AnimatorManager.Scripts.Editor {
             entity.overrideExistingLayers = EditorGUI.Toggle(_rect, entity.overrideExistingLayers);
 
             if (entity.isNotCollapsed) {
+	            
+	            rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+	            _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+	            entity.Name = EditorGUI.TextField(_rect, "Name", entity.name);
 
 	            int previousPrimaryInputIndex = entity.primaryInputIndex;
 	            
@@ -185,8 +196,8 @@ namespace AnimatorManager.Scripts.Editor {
             }
         }
 
-        private void ONAddCallback(ReorderableList list) {
-	        AnimatorLayer layer = new AnimatorLayer();
+        private void ONLayerAddCallback(ReorderableList list) {
+	        AnimatorLayer layer = new AnimatorLayer(this);
 	        if (inputs.Count > 0) {
 		        layer.SetStatesFromInputOptions(inputs[0].options);
 	        }
@@ -196,15 +207,13 @@ namespace AnimatorManager.Scripts.Editor {
         // ####################### other ######################### //
 
 		public string[] GetInputNames() {
-			return inputs.Select(input => input.name).ToArray();
+			return inputs.Select(input => input.Name).ToArray();
 		}
 
 		public void LoadAnimator(AnimatorController anim) {
 			referenceAnimator = anim;
-			inputs.Clear();
 			foreach (var parameter in referenceAnimator.parameters) {
-				var input = new AnimatorInput();
-				input.name = parameter.name;
+				var input = new AnimatorInput(this);
 				input.parameterName = parameter.name;
 				input.type = parameter.type;
 				input.defaultFloat = parameter.defaultFloat;
@@ -223,7 +232,13 @@ namespace AnimatorManager.Scripts.Editor {
 		}
 
 		public void Reset() {
+			Clear();
 			LoadAnimator(referenceAnimator);
+		}
+
+		public void Clear() {
+			inputs.Clear();
+			layers.Clear();
 		}
 	}
 }

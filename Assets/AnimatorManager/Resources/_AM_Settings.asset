@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caba58e8f0ab49f8b583ddcb9c458e43, type: 3}
   m_Name: _AM_Settings
   m_EditorClassIdentifier: 
-  lastLoadedAnimatorData: {fileID: 11400000, guid: da7897fe6ebaeaf43a7508c871d07326,
-    type: 2}
+  animatorData: {fileID: 0}
+  selectedTab: 1
+  get1stInputFromCommonCondition: 0
