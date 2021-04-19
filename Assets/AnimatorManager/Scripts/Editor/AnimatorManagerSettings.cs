@@ -11,7 +11,7 @@ namespace AnimatorManager.Scripts {
 		public Vector2 tab3scroll;
 		
 		//Input
-		public bool get1stInputFromCommonCondition;
+		public bool get1stInputFromCommonCondition = true;
 
 		public string SavedDataPath {
 			get {

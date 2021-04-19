@@ -38,7 +38,6 @@ namespace AnimatorManager.Scripts.Editor {
 
 		public AnimatorInput(AnimatorData data) {
 			_associatedData = data;
-			name = "Input " + _associatedData.inputs.Count;
 			
 			optionsRList = new ReorderableList(options, typeof(InputOption));
 			optionsRList.drawElementCallback += DrawElementCallback;
