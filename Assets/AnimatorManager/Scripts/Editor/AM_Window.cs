@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
@@ -43,11 +44,17 @@ namespace AnimatorManager.Scripts.Editor {
             }
         }
 
-        private static AnimatorData LookupDataForAnimator(AnimatorController controller) {
+        private AnimatorData LookupDataForAnimator(AnimatorController controller) {
              List<AnimatorData> foundDatas = new List<AnimatorData>(Resources.FindObjectsOfTypeAll<AnimatorData>());
             if (foundDatas.Count == 0) return null;
             foreach (var animatorData in foundDatas) {
                 if (animatorData.referenceAnimator == controller) {
+                    Debug.Log(AssetDatabase.GetAssetPath(animatorData));
+                    if (String.IsNullOrEmpty(AssetDatabase.GetAssetPath(animatorData))) {
+                        string pathToAsset = AssetDatabase.GenerateUniqueAssetPath(settingsAsset.SavedDataPath + controller.name + ".asset");
+                        AssetDatabase.CreateAsset(animatorData, pathToAsset);
+                        Debug.Log("SHOULD SAVE ASSET HERE: " + pathToAsset);
+                    }
                     return animatorData;
                 }
             }
@@ -136,7 +143,9 @@ namespace AnimatorManager.Scripts.Editor {
         private void LoadAnimator(AnimatorController anim, AnimatorData dat = null) {
             if (dat == null) {
                 settingsAsset.animatorData = CreateInstance<AnimatorData>();
-                AssetDatabase.CreateAsset(settingsAsset.animatorData, AssetDatabase.GenerateUniqueAssetPath(settingsAsset.SavedDataPath + anim.name + ".asset"));
+                string pathToAsset = AssetDatabase.GenerateUniqueAssetPath(settingsAsset.SavedDataPath + anim.name + ".asset");
+                AssetDatabase.CreateAsset(settingsAsset.animatorData, pathToAsset);
+                Debug.Log("SHOULD SAVE ASSET HERE: " + pathToAsset);
                 settingsAsset.animatorData.LoadAnimator(anim);
             } else {
                 settingsAsset.animatorData = dat;

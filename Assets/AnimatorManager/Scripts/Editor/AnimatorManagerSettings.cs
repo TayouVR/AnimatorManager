@@ -15,7 +15,7 @@ namespace AnimatorManager.Scripts {
 
 		public string SavedDataPath {
 			get {
-				return Path.Combine(Path.GetDirectoryName(AssetDatabase.GetAssetPath(this)), "SavedData") + Path.PathSeparator;
+				return Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AssetDatabase.GetAssetPath(this))), "SavedData") + Path.DirectorySeparatorChar;
 			}
 		}
 

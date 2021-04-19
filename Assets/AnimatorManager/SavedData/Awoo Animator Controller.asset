@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: caba58e8f0ab49f8b583ddcb9c458e43, type: 3}
-  m_Name: _AM_Settings
+  m_Script: {fileID: 11500000, guid: 272b1548a8b54121b3dc8264dc025707, type: 3}
+  m_Name: Awoo Animator Controller
   m_EditorClassIdentifier: 
-  animatorData: {fileID: 11400000, guid: 201bd16cfdd9e8a47b95398d6f6e262a, type: 2}
-  selectedTab: 1
-  tab3scroll: {x: 0, y: 0}
-  get1stInputFromCommonCondition: 0
+  referenceAnimator: {fileID: 0}
+  tab1scroll: {x: 0, y: 0}
+  tab2scroll: {x: 0, y: 0}
