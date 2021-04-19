@@ -8,7 +8,7 @@ using AnimatorControllerParameterType = UnityEngine.AnimatorControllerParameterT
 namespace AnimatorManager.Scripts.Editor {
 	public class AnimatorInput {
 		public string name;
-		public bool isNotCollapsed;
+		public bool isNotCollapsed = true;
 		private string m_parameterName;
 		public string parameterName {
 			get {
@@ -33,6 +33,8 @@ namespace AnimatorManager.Scripts.Editor {
 		public int defaultOptionIndex;
 
 		public AnimatorInput() {
+			name = "Input " + AM_Window.Instance.data.inputs.Count;
+			
 			optionsRList = new ReorderableList(options, typeof(InputOption));
 			optionsRList.drawElementCallback += DrawElementCallback;
 			optionsRList.drawHeaderCallback += DrawHeaderCallback;

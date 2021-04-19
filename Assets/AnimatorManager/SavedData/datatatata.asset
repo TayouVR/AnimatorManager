@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 272b1548a8b54121b3dc8264dc025707, type: 3}
-  m_Name: New Animator Manager Data
+  m_Name: datatatata
   m_EditorClassIdentifier: 
   referenceAnimator: {fileID: 9100000, guid: 1de8018d5edd9a14489d0da66015fe7d, type: 2}

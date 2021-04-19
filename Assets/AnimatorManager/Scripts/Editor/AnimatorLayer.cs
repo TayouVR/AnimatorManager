@@ -7,10 +7,12 @@ using UnityEngine;
 namespace AnimatorManager.Scripts.Editor {
 	public class AnimatorLayer {
 		public string name;
-		public bool isNotCollapsed;
+		public bool isNotCollapsed = true;
 		public int primaryInputIndex;
 		public List<AnimatorState> states;
 		public ReorderableList statesRList;
+
+		public bool overrideExistingLayers;
 
 		public AnimatorLayer(string name, List<AnimatorState> states) {
 			this.name = name;
@@ -81,5 +83,6 @@ namespace AnimatorManager.Scripts.Editor {
 		public InputOption linkedInputOption;
 		public bool isNotCollapsed;
 		public AnimationClip animation;
+		
 	}
 }

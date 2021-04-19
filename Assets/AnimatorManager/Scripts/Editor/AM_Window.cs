@@ -9,18 +9,36 @@ namespace AnimatorManager.Scripts.Editor {
         
         private bool vrcSDKfound = false;
         private bool cvrCCKfound = false;
-    
-        AnimatorData data;
+
+        private static AM_Window _instance;
+        public static AM_Window Instance {
+            get {
+                if (_instance == null) {
+                    _instance = ScriptableObject.CreateInstance<AM_Window>();
+                }
+
+                return _instance;
+            }
+        
+        }
 
         private AnimatorManagerSettings settingsAsset;
         
         public AnimatorController source;
 
+        // saved settings:
         private int tab = 0;
         private Vector2 tab1scroll;
         private Vector2 tab2scroll;
         private Vector2 tab3scroll;
-        private static GUIStyle _greyBox;
+        public AnimatorData data;
+        
+        // previousValue of those
+        private int tab_prev;
+        private Vector2 tab1scroll_prev;
+        private Vector2 tab2scroll_prev;
+        private Vector2 tab3scroll_prev;
+        public AnimatorData data_prev;
 
         [MenuItem("Tools/Animator Manager")]
         static void Init() {
@@ -28,21 +46,18 @@ namespace AnimatorManager.Scripts.Editor {
             AM_Window window = (AM_Window)EditorWindow.GetWindow(typeof(AM_Window));
             window.titleContent = new GUIContent("Animator Manager");
             window.Show();
-            
-            _greyBox = new GUIStyle();
-            _greyBox.normal.background = Resources.Load<Texture2D>("gray");
-            _greyBox.normal.textColor = Color.white;
-            _greyBox.stretchWidth = true;
-            _greyBox.margin = new RectOffset(0, 0, 0, 0);
-            _greyBox.border = new RectOffset(0, 0, 0, 0);
-            _greyBox.alignment = TextAnchor.MiddleLeft;
         }
 
         public void SaveSettings() {
             if (settingsAsset != null) {
                 settingsAsset.lastLoadedAnimatorData = data;
                 settingsAsset.lastSelectedTab = tab;
+                
+                Debug.Log("Settings Saved:\n" +
+                          "Data: " + AssetDatabase.GetAssetPath(settingsAsset.lastLoadedAnimatorData) + "\n" +
+                          "Selected Tab: " + settingsAsset.lastSelectedTab);
             }
+
         }
 
         public void LoadSettings() {
@@ -53,8 +68,11 @@ namespace AnimatorManager.Scripts.Editor {
             if (settingsAsset != null) {
                 data = settingsAsset.lastLoadedAnimatorData;
                 tab = settingsAsset.lastSelectedTab;
+                
+                Debug.Log("Settings Loaded:\n" +
+                          "Data: " + AssetDatabase.GetAssetPath(data) + "\n" +
+                          "Selected Tab: " + tab);
             }
-            
         }
 
         public AnimatorData LookupDataForAnimator(AnimatorController controller) {
@@ -119,19 +137,33 @@ namespace AnimatorManager.Scripts.Editor {
             //Footer
             Rect footerArea = new Rect(0, position.height - EditorGUIUtility.singleLineHeight * 2, position.width,
                 EditorGUIUtility.singleLineHeight * 2);
-            GUILayout.BeginArea(footerArea, _greyBox);
+            GUILayout.BeginArea(footerArea, Styles.GreyBox);
             GUILayout.Space(5);
             EditorGUILayout.BeginHorizontal();
             source = (AnimatorController)EditorGUILayout.ObjectField("Animator", source, typeof(AnimatorController), true);
             if (source != null && source != data.referenceAnimator) {
                 LoadAnimator(source, LookupDataForAnimator(source));
             }
-            GUILayout.Button("Reset");
+            if (GUILayout.Button("Reset")) {
+                if (EditorUtility.DisplayDialog("Reset Animator Data", "Do you really want to reset the Animator Data?\nThe original Animator state will be restored.", "Yes", "No")) {
+                    data.Reset();
+                }
+            }
             if (GUILayout.Button("Save")) {
-                SaveSettings();
+                data.Save();
             }
             EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
+            
+            
+            // if any settings change, save:
+            bool aSettingHasCHanged = (tab_prev != tab) || (data_prev != data);
+            
+            if (aSettingHasCHanged) {
+                SaveSettings();
+                tab_prev = tab;
+                data_prev = data;
+            }
         }
 
         private void LoadAnimator(AnimatorController anim, AnimatorData dat = null) {

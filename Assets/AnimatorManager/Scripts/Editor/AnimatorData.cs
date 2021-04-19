@@ -154,8 +154,16 @@ namespace AnimatorManager.Scripts.Editor {
 
             entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, "Name", true);
             _rect.x += 100;
-            _rect.width = rect.width - 100;
+            _rect.width = rect.width - 200;
             entity.name = EditorGUI.TextField(_rect, entity.name);
+
+            _rect.x += _rect.width + 10;
+            _rect.width = 70;
+            EditorGUI.LabelField(_rect, "Override");
+            
+            _rect.x += _rect.width;
+            _rect.width = 30;
+            entity.overrideExistingLayers = EditorGUI.Toggle(_rect, entity.overrideExistingLayers);
 
             if (entity.isNotCollapsed) {
 
@@ -193,6 +201,7 @@ namespace AnimatorManager.Scripts.Editor {
 
 		public void LoadAnimator(AnimatorController anim) {
 			referenceAnimator = anim;
+			inputs.Clear();
 			foreach (var parameter in referenceAnimator.parameters) {
 				var input = new AnimatorInput();
 				input.name = parameter.name;
@@ -203,6 +212,18 @@ namespace AnimatorManager.Scripts.Editor {
 				input.defaultBool = parameter.defaultBool;
 				inputs.Add(input);
 			}
+		}
+
+		public void Save() {
+			//Save Data into Animator
+			Debug.Log("This Method is not Implemented yet!");
+			
+			// would be to create new data asset for new animator
+			//AssetDatabase.CreateAsset(this, AssetDatabase.GetAssetPath(this));
+		}
+
+		public void Reset() {
+			LoadAnimator(referenceAnimator);
 		}
 	}
 }

@@ -3,62 +3,43 @@
 namespace AnimatorManager.Scripts.Editor {
 	public class Styles {
 
-		private static GUIStyle centeredStyle;
 		public static GUIStyle CenteredStyle {
 			get {
-				if (centeredStyle == null) {
-					centeredStyle = new GUIStyle(GUI.skin.label);
-					centeredStyle.alignment = TextAnchor.UpperCenter;
-					centeredStyle.fontSize = 30;
+				if (_centeredStyle == null) {
+					_centeredStyle = new GUIStyle(GUI.skin.label);
+					_centeredStyle.alignment = TextAnchor.UpperCenter;
+					_centeredStyle.fontSize = 30;
 				}
-				return centeredStyle;
+				return _centeredStyle;
 			}
 		}
+		private static GUIStyle _centeredStyle;
 
-		private static GUIStyle headerLabel;
 		public static GUIStyle HeaderLabel {
 			get {
-				if (headerLabel == null) {
-					headerLabel = new GUIStyle(GUI.skin.label);
-					headerLabel.fontStyle = FontStyle.Bold;
+				if (_headerLabel == null) {
+					_headerLabel = new GUIStyle(GUI.skin.label);
+					_headerLabel.fontStyle = FontStyle.Bold;
 				}
-				return headerLabel;
+				return _headerLabel;
 			}
 		}
+		private static GUIStyle _headerLabel;
 		
-		private static GUIStyle connectedButtonLeft;
-		public static GUIStyle ConnectedButtonLeft {
+		public static GUIStyle GreyBox {
 			get {
-				if (connectedButtonLeft == null) {
-					connectedButtonLeft = new GUIStyle(GUI.skin.button);
-					//connectedButtonLeft.border = new RectOffset(6, 0, 6, 6);
-					connectedButtonLeft.margin = new RectOffset(4, 0, 4, 4);
+				if (_greyBox == null) {
+					_greyBox = new GUIStyle();
+					_greyBox.normal.background = Resources.Load<Texture2D>("gray");
+					_greyBox.normal.textColor = Color.white;
+					_greyBox.stretchWidth = true;
+					_greyBox.margin = new RectOffset(0, 0, 0, 0);
+					_greyBox.border = new RectOffset(0, 0, 0, 0);
+					_greyBox.alignment = TextAnchor.MiddleLeft;
 				}
-				return connectedButtonLeft;
+				return _greyBox;
 			}
 		}
-		
-		private static GUIStyle connectedButtonCenter;
-		public static GUIStyle ConnectedButtonCenter {
-			get {
-				if (connectedButtonCenter == null) {
-					connectedButtonCenter = new GUIStyle(GUI.skin.button);
-					//connectedButtonCenter.border = new RectOffset(0, 0, 1, 1);
-					connectedButtonCenter.margin = new RectOffset(0, 0, 4, 4);
-				}
-				return connectedButtonCenter;
-			}
-		}
-		private static GUIStyle connectedButtonRight;
-		public static GUIStyle ConnectedButtonRight {
-			get {
-				if (connectedButtonRight == null) {
-					connectedButtonRight = new GUIStyle(GUI.skin.button);
-					//connectedButtonRight.border = new RectOffset(0, 1, 1, 1);
-					connectedButtonRight.margin = new RectOffset(0, 4, 4, 4);
-				}
-				return connectedButtonRight;
-			}
-		}
+		private static GUIStyle _greyBox;
 	}
 }
