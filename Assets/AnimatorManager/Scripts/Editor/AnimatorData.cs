@@ -156,44 +156,50 @@ namespace AnimatorManager.Scripts.Editor {
 
         private void DrawLayerElementCallback(Rect rect, int index, bool isactive, bool isfocused) {
             var entity = layers[index];
+            DrawLayer(rect, entity);
+        }
+
+        public void DrawLayer(Rect rect, AnimatorLayer entity) {
+	        
+	        rect.y += 2;
+	        //rect.x += 12;
+	        //rect.width -= 12;
+	        Rect _rect = new Rect(rect.x, rect.y, rect.width - 200, EditorGUIUtility.singleLineHeight);
+
+	        entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, entity.Name, true);
+
+	        GUI.enabled = entity.associatedLayerInController != null;
+	        _rect.x += _rect.width + 110;
+	        _rect.width = 70;
+	        EditorGUI.LabelField(_rect, "Override");
             
-            rect.y += 2;
-            rect.x += 12;
-            rect.width -= 12;
-            Rect _rect = new Rect(rect.x, rect.y, rect.width - 200, EditorGUIUtility.singleLineHeight);
+	        _rect.x += _rect.width;
+	        _rect.width = 30;
+	        entity.overrideExistingLayers = EditorGUI.Toggle(_rect, !GUI.enabled || entity.overrideExistingLayers);
+	        GUI.enabled = true;
 
-            entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, entity.Name, true);
-
-            _rect.x += _rect.width + 110;
-            _rect.width = 70;
-            EditorGUI.LabelField(_rect, "Override");
-            
-            _rect.x += _rect.width;
-            _rect.width = 30;
-            entity.overrideExistingLayers = EditorGUI.Toggle(_rect, entity.overrideExistingLayers);
-
-            if (entity.isNotCollapsed) {
+	        if (entity.isNotCollapsed) {
 	            
-	            rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
-	            _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
-	            entity.Name = EditorGUI.TextField(_rect, "Name", entity.name);
+		        rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+		        _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+		        entity.Name = EditorGUI.TextField(_rect, "Name", entity.name);
 
-	            int previousPrimaryInputIndex = entity.primaryInputIndex;
+		        int previousPrimaryInputIndex = entity.primaryInputIndex;
 	            
-                rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
-                _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
-                entity.primaryInputIndex = EditorGUI.Popup(_rect, "Primary Input", entity.primaryInputIndex, GetInputNames());
+		        rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+		        _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+		        entity.primaryInputIndex = EditorGUI.Popup(_rect, "Primary Input", entity.primaryInputIndex, GetInputNames());
 
-                if (previousPrimaryInputIndex != entity.primaryInputIndex) {
-	                entity.SetStatesFromInputOptions(inputs[entity.primaryInputIndex].options);
-                }
+		        if (previousPrimaryInputIndex != entity.primaryInputIndex) {
+			        entity.SetStatesFromInputOptions(inputs[entity.primaryInputIndex].options);
+		        }
 
-                rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
-                _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
-                if (entity.states != null) {
-                    entity.statesRList.DoList(_rect);
-                }
-            }
+		        rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+		        _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+		        if (entity.states != null) {
+			        entity.statesRList.DoList(_rect);
+		        }
+	        }
         }
 
         private void ONLayerAddCallback(ReorderableList list) {
@@ -220,6 +226,24 @@ namespace AnimatorManager.Scripts.Editor {
 				input.defaultInt = parameter.defaultInt;
 				input.defaultBool = parameter.defaultBool;
 				inputs.Add(input);
+			}
+			foreach (var layer in referenceAnimator.layers) {
+				var layer2 = new AnimatorLayer(this);
+				layer2.Name = layer.name;
+				layer2.associatedLayerInController = layer;
+				foreach (var state in layer.stateMachine.states) {
+					var state2 = new AnimatorState();
+					state2.Name = state.state.name;
+					state2.animation = state.state.motion;
+					layer2.states.Add(state2);
+				}
+				foreach (var stateMachine in layer.stateMachine.stateMachines) {
+					var state2 = new AnimatorState() {isLayer = true, layer = new AnimatorLayer(this)};
+					state2.Name = stateMachine.stateMachine.name;
+					state2.animatiorStateMachine = stateMachine.stateMachine;
+					layer2.states.Add(state2);
+				}
+				layers.Add(layer2);
 			}
 		}
 

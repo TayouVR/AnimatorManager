@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEditorInternal;
 using UnityEngine;
+using AnimatorControllerLayer = UnityEditor.Animations.AnimatorControllerLayer;
 
 namespace AnimatorManager.Scripts.Editor {
 	public class AnimatorLayer {
@@ -26,6 +28,7 @@ namespace AnimatorManager.Scripts.Editor {
 		public int primaryInputIndex;
 		public List<AnimatorState> states;
 		public ReorderableList statesRList;
+		public AnimatorControllerLayer associatedLayerInController;
 
 		public bool overrideExistingLayers;
 		private AnimatorData _associatedData;
@@ -47,13 +50,46 @@ namespace AnimatorManager.Scripts.Editor {
 			statesRList.draggable = false;
 			statesRList.drawElementCallback += DrawElementCallback;
 			statesRList.drawHeaderCallback += DrawHeaderCallback;
+			statesRList.onAddDropdownCallback += ONAddDropdownCallback;
+			statesRList.elementHeightCallback += ElementHeightCallback;
+		}
+
+		private float ElementHeightCallback(int index) {
+			var entity = states[index];
+
+			float height = EditorGUIUtility.singleLineHeight * 1.25f;
+            
+			if (entity.isLayer) {
+				if (entity.layer.isNotCollapsed) {
+					height += EditorGUIUtility.singleLineHeight * 1.25f;
+					height += EditorGUIUtility.singleLineHeight * 1.25f;
+					height += entity.layer.statesRList.GetHeight();
+                
+					height += EditorGUIUtility.singleLineHeight * 0.5f;
+				} else {
+				}
+				if (entity.isNotCollapsed) {
+					// if its not a layer, but a state
+					height += EditorGUIUtility.singleLineHeight * 1.25f;
+					height += EditorGUIUtility.singleLineHeight * 1.25f;
+				}
+			}
+
+			return height;
+		}
+
+		private void ONAddDropdownCallback(Rect buttonrect, ReorderableList list) {
+			var menu = new GenericMenu();
+			menu.AddItem(new GUIContent("State"), false, () => { states.Add(new AnimatorState()); });
+			menu.AddItem(new GUIContent("Sub Layer"), false, () => { states.Add(new AnimatorState() { isLayer = true, layer = new AnimatorLayer(_associatedData)}); });
+			menu.ShowAsContext();
 		}
 
 		public void SetStatesFromInputOptions(List<InputOption> inputOptions) {
 			states.Clear();
 			if (inputOptions != null) {
 				foreach (var option in inputOptions) {
-					AnimatorState state = new AnimatorState {linkedInputOption = option};
+					AnimatorState state = new AnimatorState() {linkedInputOption = option};
 					states.Add(state);
 				}
 			}
@@ -61,45 +97,53 @@ namespace AnimatorManager.Scripts.Editor {
 		}
 
 		private void DrawHeaderCallback(Rect rect) {
-			
+			EditorGUI.LabelField(rect, "States");
 		}
 
 		private void DrawElementCallback(Rect rect, int index, bool isactive, bool isfocused) {
 			var entity = states[index];
 			
-			rect.y += 2;
-			Rect _rect = new Rect(rect);
-			_rect.height = EditorGUIUtility.singleLineHeight;
-			_rect.width = _rect.width/2 - 10;
+			if (entity.isLayer) {
+				_associatedData.DrawLayer(rect, entity.layer);
+			} else {
+				rect.y += 2;
+				Rect _rect = new Rect(rect);
+				_rect.height = EditorGUIUtility.singleLineHeight;
+				_rect.width = _rect.width/2 - 10;
 
-			entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, entity.name);
+				entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, entity.Name);
 			
-			_rect.x = _rect.x + _rect.width + 20;
+				_rect.x = _rect.x + _rect.width + 20;
 			
-			entity.animation = (AnimationClip)EditorGUI.ObjectField(_rect, entity.animation, typeof(AnimationClip), true);
+				entity.animation = (AnimationClip)EditorGUI.ObjectField(_rect, entity.animation, typeof(AnimationClip), true);
 
-			if (entity.isNotCollapsed) {
-				
+				if (entity.isNotCollapsed) {
+				}
 			}
 		}
 
 		public List<string> GetStateNames() {
-			return states.Select(state => state.name).ToList();
+			return states.Select(state => state.Name).ToList();
 		}
 	}
 	
 	public class AnimatorState {
 		public int overrideInputIndex;
 
-		public string name {
-			get { return linkedInputOption != null ? linkedInputOption.name: ""; }
+		private string name;
+		public string Name {
+			get { return !string.IsNullOrEmpty(name) ? name : linkedInputOption != null ? linkedInputOption.name: ""; }
+			set { name = value; }
 		}
 
 		public int value;
 		
 		public InputOption linkedInputOption;
 		public bool isNotCollapsed;
-		public AnimationClip animation;
-		
+		public Motion animation;
+		public AnimatorStateMachine animatiorStateMachine;
+
+		public bool isLayer;
+		public AnimatorLayer layer;
 	}
 }

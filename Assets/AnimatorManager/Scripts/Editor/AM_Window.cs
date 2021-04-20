@@ -96,12 +96,28 @@ namespace AnimatorManager.Scripts.Editor {
         
             if (settingsAsset.selectedTab == 2) {
                 settingsAsset.tab3scroll = EditorGUILayout.BeginScrollView(settingsAsset.tab3scroll);
+                
+                // detect CVR CCK and VRC SDK
                 GUI.enabled = false;
                 EditorGUILayout.Toggle("VRChat SDK3 Exists", vrcSDKfound);
                 EditorGUILayout.Toggle("ChilloutVR CCK Exists", cvrCCKfound);
                 GUI.enabled = true;
+                
+                // inport
                 EditorGUILayout.LabelField("Import", Styles.HeaderLabel);
                 settingsAsset.get1stInputFromCommonCondition = EditorGUILayout.Toggle("Determine Primary Input from most common Transition condition", settingsAsset.get1stInputFromCommonCondition);
+                
+                // misc
+                EditorGUILayout.LabelField("Misc", Styles.HeaderLabel);
+                if (GUILayout.Button("Clear ALL Animator Data")) {
+                    if (EditorUtility.DisplayDialog("Clear ALL Animator Data", "Do you really want to clear ALL Animator Data?\n" +
+                                                                           "The original Animators will not be touched.\n" +
+                                                                           "ALL data for them however will be irreversibly deleted.", "Delete it", "Hell Nah")) {
+                        DeleteAllDataAssets();
+                    }
+                }
+                
+                
                 EditorGUILayout.EndScrollView();
             }
             GUILayout.EndArea();
@@ -111,8 +127,18 @@ namespace AnimatorManager.Scripts.Editor {
                 EditorGUIUtility.singleLineHeight * 2);
             GUILayout.BeginArea(footerArea, Styles.GreyBox);
             GUILayout.Space(5);
-            EditorGUILayout.BeginHorizontal();
-            source = (AnimatorController)EditorGUILayout.ObjectField("Animator", source, typeof(AnimatorController), true);
+
+            Rect _rect = new Rect(footerArea);
+            _rect.y = footerArea.height / 4;
+            _rect.x = 5;
+            _rect.width = 70;
+            EditorGUI.LabelField(_rect,"Animator");
+            _rect = new Rect(footerArea);
+            _rect.y = footerArea.height / 6;
+            _rect.height = footerArea.height * 0.666f;
+            _rect.x += 70;
+            _rect.width = footerArea.width - 75 - 135 - 85 - 85;
+            source = (AnimatorController)EditorGUI.ObjectField(_rect, source, typeof(AnimatorController), true);
             if (source != null) {
                 if (settingsAsset.animatorData == null) {
                     LoadAnimator(source, LookupDataForAnimator(source));
@@ -121,23 +147,36 @@ namespace AnimatorManager.Scripts.Editor {
                     LoadAnimator(source, LookupDataForAnimator(source));
                 }
             }
-            if (GUILayout.Button("Reset to Original State")) {
+            _rect.x = footerArea.width - 135 - 85 - 85;
+            _rect.width = 130;
+            if (GUI.Button(_rect, "Reset Original State")) {
                 if (EditorUtility.DisplayDialog("Reset Animator Data", "Do you really want to reset the Animator Data?\nThe original Animator state will be restored.", "Yes", "No")) {
                     settingsAsset.animatorData.Reset();
                 }
             }
-            if (GUILayout.Button("Clear")) {
+            _rect.x = footerArea.width - 85 - 85;
+            _rect.width = 80;
+            if (GUI.Button(_rect, "Clear")) {
                 if (EditorUtility.DisplayDialog("Empty Animator Data", "Do you really want to clear the Animator Data?\n" +
                                                                        "The original Animator will not be touched.\n" +
                                                                        "Only the data for this tool will be deleted.", "Yes", "No")) {
                     settingsAsset.animatorData.Clear();
                 }
             }
-            if (GUILayout.Button("Save")) {
+            _rect.x = footerArea.width - 85;
+            _rect.width = 80;
+            if (GUI.Button(_rect, "Save")) {
                 settingsAsset.animatorData.Save();
             }
-            EditorGUILayout.EndHorizontal();
             GUILayout.EndArea();
+        }
+
+        private void DeleteAllDataAssets() {
+            List<AnimatorData> foundDatas = new List<AnimatorData>(Resources.FindObjectsOfTypeAll<AnimatorData>());
+            if (foundDatas.Count == 0) return;
+            foreach (var animatorData in foundDatas) {
+                AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(animatorData));
+            }
         }
 
         private void LoadAnimator(AnimatorController anim, AnimatorData dat = null) {
@@ -149,6 +188,7 @@ namespace AnimatorManager.Scripts.Editor {
                 settingsAsset.animatorData.LoadAnimator(anim);
             } else {
                 settingsAsset.animatorData = dat;
+                source = dat.referenceAnimator;
             }
         }
     }
