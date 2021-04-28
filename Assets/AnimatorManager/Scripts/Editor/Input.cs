@@ -6,13 +6,13 @@ using UnityEngine;
 using AnimatorControllerParameterType = UnityEngine.AnimatorControllerParameterType;
 
 namespace AnimatorManager.Scripts.Editor {
-	public class AnimatorInput {
+	public class Input : Base {
 		private string name;
 		public string Name {
 			get {
 				if (String.IsNullOrEmpty(name)) {
 					if (String.IsNullOrEmpty(parameterName)) {
-						return "Input " + _associatedData.inputs.Count;
+						return "Input " + data.inputs.Count;
 					} else {
 						return parameterName;
 					}
@@ -27,6 +27,7 @@ namespace AnimatorManager.Scripts.Editor {
 		
 		public float OptionsListHeight => optionsRList.GetHeight();
 
+		public AnimatorControllerParameterType previousType = AnimatorControllerParameterType.Bool;
 		public AnimatorControllerParameterType type = AnimatorControllerParameterType.Bool;
 		public List<InputOption> options = new List<InputOption>();
 		public ReorderableList optionsRList;
@@ -34,10 +35,8 @@ namespace AnimatorManager.Scripts.Editor {
 		public int defaultInt;
 		public bool defaultBool;
 		public int defaultOptionIndex;
-		private AnimatorData _associatedData;
 
-		public AnimatorInput(AnimatorData data) {
-			_associatedData = data;
+		public Input(Data data) : base(data) {
 			
 			optionsRList = new ReorderableList(options, typeof(InputOption));
 			optionsRList.drawElementCallback += DrawElementCallback;
@@ -155,11 +154,5 @@ namespace AnimatorManager.Scripts.Editor {
 
 			return names.ToArray();
 		}
-	}
-
-	public class InputOption {
-		public string name;
-		public int intValue;
-		public float floatValue;
 	}
 }

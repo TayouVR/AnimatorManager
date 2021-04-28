@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 272b1548a8b54121b3dc8264dc025707, type: 3}
-  m_Name: Awoo Animator Controller
+  m_Name: Test Animator Controller
   m_EditorClassIdentifier: 
   referenceAnimator: {fileID: 0}
   tab1scroll: {x: 0, y: 0}

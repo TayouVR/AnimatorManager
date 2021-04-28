@@ -9,17 +9,23 @@ using AnimatorControllerParameterType = UnityEngine.AnimatorControllerParameterT
 namespace AnimatorManager.Scripts.Editor {
 
 	[CreateAssetMenu(fileName = "New Animator Manager Data", menuName = "Animator Manager/Animator Data", order = 0)]
-	public class AnimatorData : ScriptableObject {
+	public class Data : ScriptableObject {
 		[SerializeField]public AnimatorController referenceAnimator;
 
 		public List<AnimatorLayer> layers = new List<AnimatorLayer>();
-		public List<AnimatorInput> inputs = new List<AnimatorInput>();
+		public List<Input> inputs = new List<Input>();
 
 		public ReorderableList layerlist;
 		public ReorderableList inputlist;
 		
 		public Vector2 tab1scroll;
 		public Vector2 tab2scroll;
+		public Vector2 tab4scroll;
+
+		public List<string> backupAnimatorControllers = new List<string>();
+
+		public AnimationSavePathCat savePathCat;
+		public string customSavePath;
 
 		private void OnEnable() {
 			
@@ -35,7 +41,7 @@ namespace AnimatorManager.Scripts.Editor {
 			*/
 			
 
-			inputlist = new ReorderableList(inputs, typeof(AnimatorInput));
+			inputlist = new ReorderableList(inputs, typeof(Input));
 			inputlist.drawElementCallback += DrawInputElementCallback;
 			inputlist.elementHeightCallback += InputElementHeightCallback;
 			inputlist.onAddCallback += ONInputAddCallback;
@@ -95,6 +101,15 @@ namespace AnimatorManager.Scripts.Editor {
                 rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
                 _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
                 entity.type = (AnimatorControllerParameterType)EditorGUI.EnumPopup(_rect, "Type", entity.type);
+                if (entity.previousType != entity.type) {
+	                if (entity.type == AnimatorControllerParameterType.Bool) {
+		                entity.options.Clear();
+		                entity.options.Add(new InputOption("Off", 0, 0));
+		                entity.options.Add(new InputOption("On", 1, 1));
+	                }
+
+	                entity.previousType = entity.type;
+                }
                 
                 
                 rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
@@ -132,7 +147,7 @@ namespace AnimatorManager.Scripts.Editor {
         }
 
         private void ONInputAddCallback(ReorderableList list) {
-	        AnimatorInput input = new AnimatorInput(this);
+	        Input input = new Input(this);
 	        inputs.Add(input);
         }
         
@@ -146,7 +161,7 @@ namespace AnimatorManager.Scripts.Editor {
             if (entity.isNotCollapsed) {
                 height += EditorGUIUtility.singleLineHeight * 1.25f;
                 height += EditorGUIUtility.singleLineHeight * 1.25f;
-                height += entity.statesRList.GetHeight();
+                height += entity.stateMachine.statesRList.GetHeight();
                 
                 height += EditorGUIUtility.singleLineHeight * 0.5f;
             }
@@ -156,10 +171,10 @@ namespace AnimatorManager.Scripts.Editor {
 
         private void DrawLayerElementCallback(Rect rect, int index, bool isactive, bool isfocused) {
             var entity = layers[index];
-            DrawLayer(rect, entity);
+            DrawStateMachine(rect, entity.stateMachine);
         }
 
-        public void DrawLayer(Rect rect, AnimatorLayer entity) {
+        public void DrawStateMachine(Rect rect, StateMachine entity) {
 	        
 	        rect.y += 2;
 	        //rect.x += 12;
@@ -168,14 +183,14 @@ namespace AnimatorManager.Scripts.Editor {
 
 	        entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, entity.Name, true);
 
-	        GUI.enabled = entity.associatedLayerInController != null;
+	        GUI.enabled = entity.controllerStateMachine != null;
 	        _rect.x += _rect.width + 110;
 	        _rect.width = 70;
 	        EditorGUI.LabelField(_rect, "Override");
             
 	        _rect.x += _rect.width;
 	        _rect.width = 30;
-	        entity.overrideExistingLayers = EditorGUI.Toggle(_rect, !GUI.enabled || entity.overrideExistingLayers);
+	        entity.overrideExistingStateMachine = EditorGUI.Toggle(_rect, !GUI.enabled || entity.overrideExistingStateMachine);
 	        GUI.enabled = true;
 
 	        if (entity.isNotCollapsed) {
@@ -202,10 +217,28 @@ namespace AnimatorManager.Scripts.Editor {
 	        }
         }
 
+        public void DrawState(Rect rect, State entity) {
+	        
+	        rect.y += 2;
+	        Rect _rect = new Rect(rect);
+	        _rect.height = EditorGUIUtility.singleLineHeight;
+	        _rect.width = _rect.width/2 - 10;
+
+	        entity.isNotCollapsed = EditorGUI.Foldout(_rect, entity.isNotCollapsed, entity.Name);
+			
+	        _rect.x = _rect.x + _rect.width + 20;
+			
+	        entity.motion = (AnimationClip)EditorGUI.ObjectField(_rect, entity.motion, typeof(AnimationClip), true);
+
+	        if (entity.isNotCollapsed) {
+	        }
+
+        }
+
         private void ONLayerAddCallback(ReorderableList list) {
 	        AnimatorLayer layer = new AnimatorLayer(this);
 	        if (inputs.Count > 0) {
-		        layer.SetStatesFromInputOptions(inputs[0].options);
+		        layer.stateMachine.SetStatesFromInputOptions(inputs[0].options);
 	        }
 	        layers.Add(layer);
         }
@@ -215,11 +248,13 @@ namespace AnimatorManager.Scripts.Editor {
 		public string[] GetInputNames() {
 			return inputs.Select(input => input.Name).ToArray();
 		}
-
+        
+		// ####################### load ######################### //
+		
 		public void LoadAnimator(AnimatorController anim) {
 			referenceAnimator = anim;
 			foreach (var parameter in referenceAnimator.parameters) {
-				var input = new AnimatorInput(this);
+				var input = new Input(this);
 				input.parameterName = parameter.name;
 				input.type = parameter.type;
 				input.defaultFloat = parameter.defaultFloat;
@@ -230,29 +265,101 @@ namespace AnimatorManager.Scripts.Editor {
 			foreach (var layer in referenceAnimator.layers) {
 				var layer2 = new AnimatorLayer(this);
 				layer2.Name = layer.name;
-				layer2.associatedLayerInController = layer;
-				foreach (var state in layer.stateMachine.states) {
-					var state2 = new AnimatorState();
-					state2.Name = state.state.name;
-					state2.animation = state.state.motion;
-					layer2.states.Add(state2);
-				}
-				foreach (var stateMachine in layer.stateMachine.stateMachines) {
-					var state2 = new AnimatorState() {isLayer = true, layer = new AnimatorLayer(this)};
-					state2.Name = stateMachine.stateMachine.name;
-					state2.animatiorStateMachine = stateMachine.stateMachine;
-					layer2.states.Add(state2);
-				}
+				layer2.controllerLayer = layer;
 				layers.Add(layer2);
+				layer2.stateMachine = Load_AddStatesToStateMachine(layer.stateMachine);
 			}
 		}
 
+		private StateMachine Load_AddStatesToStateMachine(AnimatorStateMachine stateMachine) {
+			StateMachine returnStateMachine = new StateMachine(this);
+			returnStateMachine.Name = stateMachine.name;
+			returnStateMachine.controllerStateMachine = stateMachine;
+			foreach (var state in stateMachine.states) {
+				var state2 = new StateProxy(this);
+				state2.state.Name = state.state.name;
+				state2.state.motion = state.state.motion;
+				returnStateMachine.states.Add(state2);
+			}
+			foreach (var stateMachine2 in stateMachine.stateMachines) {
+				var state2 = new StateProxy(StateType.StateMachine, this);
+				Load_AddStatesToStateMachine(stateMachine2.stateMachine);
+				returnStateMachine.states.Add(state2);
+			}
+
+			return returnStateMachine;
+		}
+		
+		// ####################### save ######################### //
+		
 		public void Save() {
 			//Save Data into Animator
-			Debug.Log("This Method is not Implemented yet!");
+
+			// parameters
+			List<AnimatorControllerParameter> newParameters = new List<AnimatorControllerParameter>();
+			foreach (var input in inputs) {
+				AnimatorControllerParameter controllerParameter = new AnimatorControllerParameter();
+				controllerParameter.name = input.parameterName;
+				controllerParameter.type = input.type;
+				controllerParameter.defaultBool = input.defaultBool;
+				if (input.options.Count > input.defaultOptionIndex) {
+					controllerParameter.defaultFloat = input.options[input.defaultOptionIndex].floatValue;
+					controllerParameter.defaultInt = input.options[input.defaultOptionIndex].intValue; 
+				}
+				newParameters.Add(controllerParameter);
+			}
 			
-			// would be to create new data asset for new animator
-			//AssetDatabase.CreateAsset(this, AssetDatabase.GetAssetPath(this));
+			// layers
+			List<AnimatorControllerLayer> newLayers = new List<AnimatorControllerLayer>();
+			foreach (var layer in layers) {
+				AnimatorControllerLayer controllerLayer = new AnimatorControllerLayer();
+				controllerLayer.name = layer.Name;
+				controllerLayer.stateMachine = AddStateMachine(layer.stateMachine);
+				controllerLayer.defaultWeight = 1;
+				newLayers.Add(controllerLayer);
+			}
+
+			referenceAnimator.parameters = newParameters.ToArray();
+			referenceAnimator.layers = newLayers.ToArray();
+		}
+
+		private AnimatorStateMachine AddStateMachine(StateMachine stateMachine) {
+			AnimatorStateMachine controllerStateMachine;
+			
+			if (stateMachine.overrideExistingStateMachine) {
+				List<ChildAnimatorState> newStates = new List<ChildAnimatorState>();
+				List<ChildAnimatorStateMachine> newStateMachines = new List<ChildAnimatorStateMachine>();
+				controllerStateMachine = stateMachine.controllerStateMachine != null
+					? stateMachine.controllerStateMachine
+					: new AnimatorStateMachine();
+				controllerStateMachine.name = stateMachine.Name;
+				foreach (var state in stateMachine.states) {
+					switch (state.type) {
+						case StateType.State: {
+							var temp = new ChildAnimatorState();
+							temp.state = new UnityEditor.Animations.AnimatorState();
+							temp.state.motion = state.state.motion;
+							temp.state.name = state.state.Name;
+							newStates.Add(temp);
+							break;
+						}
+						case StateType.StateMachine:
+						default: {
+							var temp = new ChildAnimatorStateMachine();
+							temp.stateMachine = AddStateMachine(state.stateMachine);
+							newStateMachines.Add(temp);
+							break;
+						}
+					}
+				}
+
+				controllerStateMachine.stateMachines = newStateMachines.ToArray();
+				controllerStateMachine.states = newStates.ToArray();
+			} else {
+				controllerStateMachine = stateMachine.controllerStateMachine;
+			}
+
+			return controllerStateMachine;
 		}
 
 		public void Reset() {
@@ -264,5 +371,21 @@ namespace AnimatorManager.Scripts.Editor {
 			inputs.Clear();
 			layers.Clear();
 		}
+
+		public void DrawSettings() {
+			savePathCat = (AnimationSavePathCat)EditorGUILayout.EnumPopup(savePathCat);
+			if (savePathCat == AnimationSavePathCat.Custom) {
+				customSavePath = EditorGUILayout.TextField(customSavePath);
+				if (GUILayout.Button("Select")) {
+					customSavePath = EditorUtility.OpenFolderPanel("Select path for new Animation Clips", "", "Animations");
+				}
+			}
+		}
+	}
+
+	public enum AnimationSavePathCat {
+		InAnimatorManager,	// AM_Window.Instance.settingsAsset.AnimationsPath;
+		InAnimatorFolder,	// AssetDatabase.GetAssetPath(referenceAnimator);
+		Custom				// customSavePath
 	}
 }
