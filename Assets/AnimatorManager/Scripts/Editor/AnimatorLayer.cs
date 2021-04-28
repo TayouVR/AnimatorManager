@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEditor;
-using UnityEditorInternal;
 using AnimatorControllerLayer = UnityEditor.Animations.AnimatorControllerLayer;
 
 namespace AnimatorManager.Scripts.Editor {
+	[Serializable]
 	public class AnimatorLayer : Base {
 		public string name;
 		public string Name {

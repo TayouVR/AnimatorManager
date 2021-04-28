@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditorInternal;
 using UnityEngine;
 
 namespace AnimatorManager.Scripts.Editor {
+	[Serializable]
 	public class StateMachine : Base {
 		public string name;
 		public string Name {

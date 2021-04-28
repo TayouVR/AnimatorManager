@@ -70,7 +70,6 @@ namespace AnimatorManager.Scripts.Editor {
         }
 
         void OnGUI() {
-            
             //Header
             GUILayout.Label("Animator Manager", Styles.CenteredStyle);
         
@@ -81,6 +80,7 @@ namespace AnimatorManager.Scripts.Editor {
             //pages
             GUILayout.BeginArea(new Rect(0, 65, position.width, position.height - 65 - EditorGUIUtility.singleLineHeight * 2));
             if (settingsAsset.data != null) {
+                EditorUtility.SetDirty(settingsAsset.data);
                 if (settingsAsset.selectedTab == 0) {
                     settingsAsset.data.tab1scroll = EditorGUILayout.BeginScrollView(settingsAsset.data.tab1scroll);
                     settingsAsset.data.layerlist.DoLayoutList();

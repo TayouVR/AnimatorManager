@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace AnimatorManager.Scripts.Editor {
+	[Serializable]
 	public class State : Base {
 		public int overrideInputIndex;
 

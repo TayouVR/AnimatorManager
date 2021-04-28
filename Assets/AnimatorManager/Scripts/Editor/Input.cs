@@ -6,6 +6,7 @@ using UnityEngine;
 using AnimatorControllerParameterType = UnityEngine.AnimatorControllerParameterType;
 
 namespace AnimatorManager.Scripts.Editor {
+	[Serializable]
 	public class Input : Base {
 		private string name;
 		public string Name {

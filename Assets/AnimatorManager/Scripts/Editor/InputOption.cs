@@ -1,4 +1,7 @@
-﻿namespace AnimatorManager.Scripts.Editor {
+﻿using System;
+
+namespace AnimatorManager.Scripts.Editor {
+	[Serializable]
 	public class InputOption {
 		public string name;
 		public int intValue;

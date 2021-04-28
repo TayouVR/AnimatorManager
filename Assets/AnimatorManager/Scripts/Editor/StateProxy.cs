@@ -1,4 +1,7 @@
-﻿namespace AnimatorManager.Scripts.Editor {
+﻿using System;
+
+namespace AnimatorManager.Scripts.Editor {
+	[Serializable]
 	public class StateProxy : Base {
 		public State state;
 		public StateMachine stateMachine;
