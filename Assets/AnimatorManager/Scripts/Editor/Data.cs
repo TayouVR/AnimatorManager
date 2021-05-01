@@ -69,7 +69,7 @@ namespace AnimatorManager.Scripts.Editor {
                 }
 
                 if (entity.type == AnimatorControllerParameterType.Float || entity.type == AnimatorControllerParameterType.Int) {
-                    height += entity.OptionsListHeight;
+                    height += entity.OptionsRList.GetHeight();
                 }
                 
                 height += EditorGUIUtility.singleLineHeight * 0.5f;
@@ -138,10 +138,10 @@ namespace AnimatorManager.Scripts.Editor {
                     default:
                         break;
                 }
-                if (entity.optionsRList != null && (entity.type == AnimatorControllerParameterType.Float || entity.type == AnimatorControllerParameterType.Int)) {
+                if (entity.OptionsRList != null && (entity.type == AnimatorControllerParameterType.Float || entity.type == AnimatorControllerParameterType.Int)) {
                     rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
-                    _rect = new Rect(rect.x, rect.y, rect.width, entity.OptionsListHeight);
-                    entity.optionsRList.DoList(_rect);
+                    _rect = new Rect(rect.x, rect.y, rect.width, entity.OptionsRList.GetHeight());
+                    entity.OptionsRList.DoList(_rect);
                 }
             }
         }
@@ -158,10 +158,10 @@ namespace AnimatorManager.Scripts.Editor {
 
             float height = EditorGUIUtility.singleLineHeight * 1.25f;
             
-            if (entity.isNotCollapsed) {
+            if (entity.stateMachine.isNotCollapsed) {
                 height += EditorGUIUtility.singleLineHeight * 1.25f;
                 height += EditorGUIUtility.singleLineHeight * 1.25f;
-                height += entity.stateMachine.statesRList.GetHeight();
+                height += entity.stateMachine.StatesRList.GetHeight();
                 
                 height += EditorGUIUtility.singleLineHeight * 0.5f;
             }
@@ -212,7 +212,7 @@ namespace AnimatorManager.Scripts.Editor {
 		        rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
 		        _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
 		        if (entity.states != null) {
-			        entity.statesRList.DoList(_rect);
+			        entity.StatesRList.DoList(_rect);
 		        }
 	        }
         }
@@ -220,6 +220,7 @@ namespace AnimatorManager.Scripts.Editor {
         public void DrawState(Rect rect, State entity) {
 	        
 	        rect.y += 2;
+	        rect.height = EditorGUIUtility.singleLineHeight;
 	        Rect _rect = new Rect(rect);
 	        _rect.height = EditorGUIUtility.singleLineHeight;
 	        _rect.width = _rect.width/2 - 10;
@@ -228,9 +229,14 @@ namespace AnimatorManager.Scripts.Editor {
 			
 	        _rect.x = _rect.x + _rect.width + 20;
 			
-	        entity.motion = (AnimationClip)EditorGUI.ObjectField(_rect, entity.motion, typeof(AnimationClip), true);
+	        entity.motion = (Motion)EditorGUI.ObjectField(_rect, entity.motion, typeof(Motion), true);
 
 	        if (entity.isNotCollapsed) {
+		        if (entity.overrideInputIndex == -1) {
+			        rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+			        _rect = new Rect(rect);
+			        entity.Name = EditorGUI.TextField(_rect, "Name", entity.name);
+		        }
 	        }
 
         }
@@ -276,13 +282,13 @@ namespace AnimatorManager.Scripts.Editor {
 			returnStateMachine.Name = stateMachine.name;
 			returnStateMachine.controllerStateMachine = stateMachine;
 			foreach (var state in stateMachine.states) {
-				var state2 = new StateProxy(this);
+				var state2 = new StateProxy(this, returnStateMachine);
 				state2.state.Name = state.state.name;
 				state2.state.motion = state.state.motion;
 				returnStateMachine.states.Add(state2);
 			}
 			foreach (var stateMachine2 in stateMachine.stateMachines) {
-				var state2 = new StateProxy(StateType.StateMachine, this);
+				var state2 = new StateProxy(StateType.StateMachine, this, returnStateMachine);
 				Load_AddStatesToStateMachine(stateMachine2.stateMachine);
 				returnStateMachine.states.Add(state2);
 			}
@@ -332,6 +338,7 @@ namespace AnimatorManager.Scripts.Editor {
 				controllerStateMachine = stateMachine.controllerStateMachine != null
 					? stateMachine.controllerStateMachine
 					: new AnimatorStateMachine();
+				stateMachine.controllerStateMachine = controllerStateMachine;
 				controllerStateMachine.name = stateMachine.Name;
 				foreach (var state in stateMachine.states) {
 					switch (state.type) {

@@ -21,28 +21,34 @@ namespace AnimatorManager.Scripts.Editor {
 					return name;
 				}
 			}
-			set => name = value;
+			set { name = value; }
 		}
+
 		public bool isNotCollapsed = true;
 		public string parameterName;
-		
-		public float OptionsListHeight => optionsRList.GetHeight();
+
+		public ReorderableList OptionsRList {
+			get { 
+				if (optionsRList == null) {
+					optionsRList = new ReorderableList(options, typeof(InputOption));
+					optionsRList.drawElementCallback += DrawElementCallback;
+					optionsRList.drawHeaderCallback += DrawHeaderCallback;
+					optionsRList.onAddCallback += OnAddCallback;
+				}
+				return optionsRList; }
+			set { optionsRList = value; }
+		}
 
 		public AnimatorControllerParameterType previousType = AnimatorControllerParameterType.Bool;
 		public AnimatorControllerParameterType type = AnimatorControllerParameterType.Bool;
 		public List<InputOption> options = new List<InputOption>();
-		public ReorderableList optionsRList;
+		private ReorderableList optionsRList;
 		public float defaultFloat;
 		public int defaultInt;
 		public bool defaultBool;
 		public int defaultOptionIndex;
 
 		public Input(Data data) : base(data) {
-			
-			optionsRList = new ReorderableList(options, typeof(InputOption));
-			optionsRList.drawElementCallback += DrawElementCallback;
-			optionsRList.drawHeaderCallback += DrawHeaderCallback;
-			optionsRList.onAddCallback += OnAddCallback;
 		}
 
 		private void OnAddCallback(ReorderableList list) {

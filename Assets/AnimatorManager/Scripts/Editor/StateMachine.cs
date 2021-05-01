@@ -21,14 +21,30 @@ namespace AnimatorManager.Scripts.Editor {
 					return name;
 				}
 			}
-			set => name = value;
+			set { name = value; }
 		}
+
 		public bool isNotCollapsed = true;
 		public int primaryInputIndex;
-		public List<StateProxy> states;
-		public ReorderableList statesRList;
+		public List<StateProxy> states = new List<StateProxy>();
+		private ReorderableList statesRList;
 		public AnimatorStateMachine controllerStateMachine;
-		
+
+		public ReorderableList StatesRList {
+			get { 
+				if (statesRList == null) {
+					statesRList = new ReorderableList(states, typeof(State));
+					statesRList.draggable = false;
+					statesRList.drawElementCallback += DrawElementCallback;
+					statesRList.drawHeaderCallback += DrawHeaderCallback;
+					statesRList.onAddDropdownCallback += ONAddDropdownCallback;
+					statesRList.elementHeightCallback += ElementHeightCallback;
+				}
+				return statesRList; 
+			}
+			set { statesRList = value; }
+		}
+
 		public bool overrideExistingStateMachine;
 
 		public StateMachine(string name, List<StateProxy> states, Data data) : base(data) {
@@ -44,12 +60,14 @@ namespace AnimatorManager.Scripts.Editor {
 		}
 
 		private void InitReorderableList() {
-			statesRList = new ReorderableList(states, typeof(State));
-			statesRList.draggable = false;
-			statesRList.drawElementCallback += DrawElementCallback;
-			statesRList.drawHeaderCallback += DrawHeaderCallback;
-			statesRList.onAddDropdownCallback += ONAddDropdownCallback;
-			statesRList.elementHeightCallback += ElementHeightCallback;
+			if (StatesRList == null) {
+				StatesRList = new ReorderableList(states, typeof(State));
+				StatesRList.draggable = false;
+				StatesRList.drawElementCallback += DrawElementCallback;
+				StatesRList.drawHeaderCallback += DrawHeaderCallback;
+				StatesRList.onAddDropdownCallback += ONAddDropdownCallback;
+				StatesRList.elementHeightCallback += ElementHeightCallback;
+			}
 		}
 
 		private float ElementHeightCallback(int index) {
@@ -62,7 +80,7 @@ namespace AnimatorManager.Scripts.Editor {
 					if (entity.stateMachine.isNotCollapsed) {
 						height += EditorGUIUtility.singleLineHeight * 1.25f;
 						height += EditorGUIUtility.singleLineHeight * 1.25f;
-						height += entity.stateMachine.statesRList.GetHeight();
+						height += entity.stateMachine.StatesRList.GetHeight();
                 
 						height += EditorGUIUtility.singleLineHeight * 0.5f;
 					}
@@ -89,17 +107,17 @@ namespace AnimatorManager.Scripts.Editor {
 
 		private void ONAddDropdownCallback(Rect buttonrect, ReorderableList list) {
 			var menu = new GenericMenu();
-			menu.AddItem(new GUIContent("State"), false, () => states.Add(new StateProxy(StateType.State, data)));
-			menu.AddItem(new GUIContent("Sub Layer"), false, () => states.Add(new StateProxy(StateType.StateMachine, data)));
+			menu.AddItem(new GUIContent("State"), false, () => states.Add(new StateProxy(StateType.State, data, this)));
+			menu.AddItem(new GUIContent("State Machine"), false, () => states.Add(new StateProxy(StateType.StateMachine, data, this)));
 			menu.ShowAsContext();
 		}
 
 		public void SetStatesFromInputOptions(List<InputOption> inputOptions) {
 			states.Clear();
 			if (inputOptions != null) {
-				foreach (var option in inputOptions) {
-					StateProxy state = new StateProxy(data);
-					state.state.linkedInputOption = option;
+				for (var i = 0; i < inputOptions.Count; i++) {
+					StateProxy state = new StateProxy(data, this);
+					state.state.linkedInputOptionIndex = i;
 					states.Add(state);
 				}
 			}

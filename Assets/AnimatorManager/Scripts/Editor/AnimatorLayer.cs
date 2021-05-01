@@ -4,23 +4,23 @@ using AnimatorControllerLayer = UnityEditor.Animations.AnimatorControllerLayer;
 namespace AnimatorManager.Scripts.Editor {
 	[Serializable]
 	public class AnimatorLayer : Base {
-		public string name;
 		public string Name {
 			get {
-				if (String.IsNullOrEmpty(name)) {
+				if (stateMachine == null) {
+					return "";
+				}
+				if (String.IsNullOrEmpty(stateMachine.name)) {
 					if (data.inputs.Count > 0) {
-						return data.inputs[primaryInputIndex].Name;
+						return data.inputs[stateMachine.primaryInputIndex].Name;
 					} else {
 						return "Layer " + data.layers.Count;
 					}
 				} else {
-					return name;
+					return stateMachine.name;
 				}
 			}
-			set => name = value;
+			set => stateMachine.name = value;
 		}
-		public bool isNotCollapsed = true;
-		public int primaryInputIndex;
 		public StateMachine stateMachine;
 		
 		public AnimatorControllerLayer controllerLayer;

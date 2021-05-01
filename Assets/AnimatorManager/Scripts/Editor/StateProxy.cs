@@ -7,10 +7,10 @@ namespace AnimatorManager.Scripts.Editor {
 		public StateMachine stateMachine;
 		public StateType type;
 
-		public StateProxy(Data data) : this(StateType.State, data) {
+		public StateProxy(Data data, StateMachine parentMachine) : this(StateType.State, data, parentMachine) {
 		}
 
-		public StateProxy(StateType type, Data data) : base(data) {
+		public StateProxy(StateType type, Data data, StateMachine parentMachine) : base(data) {
 			this.type = type;
 			switch (type) {
 				case StateType.StateMachine:
@@ -18,7 +18,7 @@ namespace AnimatorManager.Scripts.Editor {
 					break;
 				case StateType.State:
 				default:
-					state = new State(data);
+					state = new State(data, parentMachine);
 					break;
 			}
 		}
