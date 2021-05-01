@@ -41,5 +41,67 @@ namespace AnimatorManager.Scripts.Editor {
 			}
 		}
 		private static GUIStyle _greyBox;
+		
+		public static GUIStyle EndNode {
+			get {
+				if (_endNode == null) {
+					_endNode = new GUIStyle();
+					_endNode.normal.background = Resources.Load<Texture2D>("red");
+					_endNode.focused.background = Resources.Load<Texture2D>("red");
+					_endNode.normal.textColor = Color.white;
+					_endNode.alignment = TextAnchor.MiddleCenter;
+					_endNode.border = new RectOffset(16, 16, 16, 16);
+				}
+				return _endNode;
+			}
+		}
+		private static GUIStyle _endNode;
+		
+		public static GUIStyle StartNode {
+			get {
+				if (_startNode == null) {
+					_startNode = new GUIStyle();
+					_startNode.normal.background = Resources.Load<Texture2D>("green");
+					_startNode.focused.background = Resources.Load<Texture2D>("green");
+					_startNode.normal.textColor = Color.white;
+					_startNode.alignment = TextAnchor.MiddleCenter;
+					_startNode.border = new RectOffset(16, 16, 16, 16);
+				}
+				return _startNode;
+			}
+		}
+		private static GUIStyle _startNode;
+		
+		public static GUIStyle AnyStateNode {
+			get {
+				if (_anyStateNode == null) {
+					_anyStateNode = new GUIStyle();
+					_anyStateNode.normal.background = Resources.Load<Texture2D>("anyStateNode");
+					_anyStateNode.onFocused.background = Resources.Load<Texture2D>("anyStateNode");
+					_anyStateNode.focused.background = Resources.Load<Texture2D>("anyStateNode");
+					_anyStateNode.normal.textColor = Color.white;
+					_anyStateNode.alignment = TextAnchor.MiddleCenter;
+					_anyStateNode.border = new RectOffset(16, 16, 16, 16);
+				}
+				return _anyStateNode;
+			}
+		}
+		private static GUIStyle _anyStateNode;
+		
+		public static GUIStyle BlankStateNode {
+			get {
+				if (_blankStateNode == null) {
+					_blankStateNode = new GUIStyle();
+					_blankStateNode.normal.background = Resources.Load<Texture2D>("");
+					_blankStateNode.onFocused.background = Resources.Load<Texture2D>("");
+					_blankStateNode.focused.background = Resources.Load<Texture2D>("");
+					_blankStateNode.normal.textColor = Color.white;
+					_blankStateNode.alignment = TextAnchor.MiddleCenter;
+					_blankStateNode.border = new RectOffset(16, 16, 16, 16);
+				}
+				return _blankStateNode;
+			}
+		}
+		private static GUIStyle _blankStateNode;
 	}
 }

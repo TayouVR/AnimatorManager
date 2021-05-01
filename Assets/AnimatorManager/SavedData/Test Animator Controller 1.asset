@@ -10,25 +10,53 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 272b1548a8b54121b3dc8264dc025707, type: 3}
-  m_Name: Awoo Animator Controller
+  m_Name: Test Animator Controller 1
   m_EditorClassIdentifier: 
-  referenceAnimator: {fileID: 9100000, guid: bc84bf483ddeed14ca64e4007389cb7d, type: 2}
+  referenceAnimator: {fileID: 9100000, guid: 1de8018d5edd9a14489d0da66015fe7d, type: 2}
   layers:
   - data: {fileID: 11400000}
     stateMachine:
       data: {fileID: 11400000}
-      name: Base Layer
+      name: OwO
       isNotCollapsed: 1
       primaryInputIndex: 0
       states: []
-      controllerStateMachine: {fileID: 1107161706822708432, guid: bc84bf483ddeed14ca64e4007389cb7d,
-        type: 2}
-      overrideExistingStateMachine: 0
+      controllerStateMachine: {fileID: 0}
+      overrideExistingStateMachine: 1
+  - data: {fileID: 11400000}
+    stateMachine:
+      data: {fileID: 11400000}
+      name: 
+      isNotCollapsed: 1
+      primaryInputIndex: 1
+      states: []
+      controllerStateMachine: {fileID: 0}
+      overrideExistingStateMachine: 1
   inputs:
   - data: {fileID: 11400000}
     isNotCollapsed: 1
-    parameterName: Right Hand
+    parameterName: Hello World
     previousType: 4
+    type: 4
+    options: []
+    defaultFloat: 0
+    defaultInt: 0
+    defaultBool: 0
+    defaultOptionIndex: 0
+  - data: {fileID: 11400000}
+    isNotCollapsed: 1
+    parameterName: Second Input
+    previousType: 1
+    type: 1
+    options: []
+    defaultFloat: 0
+    defaultInt: 0
+    defaultBool: 0
+    defaultOptionIndex: 0
+  - data: {fileID: 11400000}
+    isNotCollapsed: 1
+    parameterName: What are you doing stepbro
+    previousType: 3
     type: 3
     options: []
     defaultFloat: 0
@@ -37,9 +65,9 @@ MonoBehaviour:
     defaultOptionIndex: 0
   - data: {fileID: 11400000}
     isNotCollapsed: 1
-    parameterName: Blergh
-    previousType: 4
-    type: 9
+    parameterName: OwO
+    previousType: 1
+    type: 1
     options: []
     defaultFloat: 0
     defaultInt: 0
