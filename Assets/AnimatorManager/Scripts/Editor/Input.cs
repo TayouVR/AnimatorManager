@@ -47,6 +47,9 @@ namespace AnimatorManager.Scripts.Editor {
 		public int defaultInt;
 		public bool defaultBool;
 		public int defaultOptionIndex;
+		
+		// VRC
+		public bool saved = true;
 
 		public Input(Data data) : base(data) {
 		}

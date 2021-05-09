@@ -5,13 +5,16 @@ using UnityEditor;
 using UnityEngine;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
 
+#if VRC_SDK_VRCSDK3
+using VRC.SDK3.Avatars.ScriptableObjects;
+#endif
+
 namespace AnimatorManager.Scripts.Editor {
 	public class AM_Window : EditorWindow {
         
-        private bool vrcSDKfound = false;
-        private bool cvrCCKfound = false;
+        public static bool vrcSDKfound = false;
+        public static bool cvrCCKfound = false;
 
-        private static AM_Window _instance;
         public static AM_Window Instance {
             get {
                 if (_instance == null) {
@@ -22,12 +25,14 @@ namespace AnimatorManager.Scripts.Editor {
             }
         
         }
+        private static AM_Window _instance;
+
+        public bool vrcStuffCollapsed;
         
         public AnimatorController source;
 
         // settings:
         public Settings settingsAsset;
-        public Data data;
 
         [MenuItem("Tools/Animator Manager")]
         static void Init() {
@@ -68,14 +73,17 @@ namespace AnimatorManager.Scripts.Editor {
             
             LoadSettings();
         }
-
+        
         void OnGUI() {
             //Header
             GUILayout.Label("Animator Manager", Styles.CenteredStyle);
         
             //Tab Button Group
-
+#if VRC_SDK_VRCSDK3
+            settingsAsset.selectedTab = GUILayout.Toolbar(settingsAsset.selectedTab, new[] {"Animations", "Input", "Global Settings", "Animator Settings", "VRC Menus"});
+#else
             settingsAsset.selectedTab = GUILayout.Toolbar(settingsAsset.selectedTab, new[] {"Animations", "Input", "Global Settings", "Animator Settings"});
+#endif
         
             //pages
             GUILayout.BeginArea(new Rect(0, 65, position.width, position.height - 65 - EditorGUIUtility.singleLineHeight * 2));
@@ -89,9 +97,52 @@ namespace AnimatorManager.Scripts.Editor {
             
                 if (settingsAsset.selectedTab == 1) {
                     settingsAsset.data.tab2scroll = EditorGUILayout.BeginScrollView(settingsAsset.data.tab2scroll);
+#if VRC_SDK_VRCSDK3
+                    vrcStuffCollapsed = EditorGUILayout.Foldout(vrcStuffCollapsed, "VRC Stats and Options");
+                    if (vrcStuffCollapsed) {
+                        //Cost
+                        int cost = settingsAsset.data.CalcTotalCost();
+                        if(cost <= VRCExpressionParameters.MAX_PARAMETER_COST)
+                            EditorGUILayout.HelpBox($"Total Memory: {cost}/{VRCExpressionParameters.MAX_PARAMETER_COST}", MessageType.Info);
+                        else
+                            EditorGUILayout.HelpBox($"Total Memory: {cost}/{VRCExpressionParameters.MAX_PARAMETER_COST}\nParameters use too much memory.  Remove parameters or use bools which use less memory.", MessageType.Error);
+
+			    
+                        //Info
+                        EditorGUILayout.HelpBox("Only parameters defined here can be used by expression menus, sync between all playable layers and sync across the network to remote clients.", MessageType.Info);
+                        EditorGUILayout.HelpBox("The parameter name and type should match a parameter defined on one or more of your animation controllers.", MessageType.Info);
+                        EditorGUILayout.HelpBox("Parameters used by the default animation controllers (Optional)\nVRCEmote, Int\nVRCFaceBlendH, Float\nVRCFaceBlendV, Float", MessageType.Info);
+
+                        //Clear
+                        if (GUILayout.Button("Clear Parameters"))
+                        {
+                            if (EditorUtility.DisplayDialogComplex("Warning", "Are you sure you want to clear all expression parameters?", "Clear", "Cancel", "") == 0)
+                            {
+                                settingsAsset.data.InitExpressionParameters(false);
+                            }
+                        }
+                        if (GUILayout.Button("Default Parameters"))
+                        {
+                            if (EditorUtility.DisplayDialogComplex("Warning", "Are you sure you want to reset all expression parameters to default?", "Reset", "Cancel", "") == 0)
+                            {
+                                settingsAsset.data.InitExpressionParameters(true);
+                            }
+                        }
+                    }
+#endif
                     settingsAsset.data.inputlist.DoLayoutList();
                     EditorGUILayout.EndScrollView();
                 }
+#if VRC_SDK_VRCSDK3
+                if (settingsAsset.selectedTab == 4) {
+                    settingsAsset.data.tab5scroll = EditorGUILayout.BeginScrollView(settingsAsset.data.tab5scroll);
+                    settingsAsset.data.mainMenu = (VRCExpressionsMenu)EditorGUILayout.ObjectField("Main Menu", settingsAsset.data.mainMenu, typeof(VRCExpressionsMenu));
+                    if (settingsAsset.data.mainMenu != null) {
+                        settingsAsset.data.DrawVRCMainMenu();
+                    }
+                    EditorGUILayout.EndScrollView();
+                }
+#endif
             }
         
             if (settingsAsset.selectedTab == 2) {
@@ -111,6 +162,7 @@ namespace AnimatorManager.Scripts.Editor {
                 // misc
                 EditorGUILayout.LabelField("Misc", Styles.HeaderLabel);
                 settingsAsset.backupCount = EditorGUILayout.IntField("Number of Backups", settingsAsset.backupCount);
+                settingsAsset.useSmallTextureInput = EditorGUILayout.Toggle("Use Small Texture Input", settingsAsset.useSmallTextureInput);
                 if (GUILayout.Button("Clear ALL Animator Data")) {
                     if (EditorUtility.DisplayDialog("Clear ALL Animator Data", "Do you really want to clear ALL Animator Data?\n" +
                                                                            "The original Animators will not be touched.\n" +

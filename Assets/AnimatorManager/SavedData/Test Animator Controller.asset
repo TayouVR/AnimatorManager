@@ -17,282 +17,12 @@ MonoBehaviour:
   - data: {fileID: 11400000}
     stateMachine:
       data: {fileID: 11400000}
-      name: 
-      isNotCollapsed: 1
-      primaryInputIndex: 3
-      states:
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 0
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 1
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 2
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 3
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 4
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 0}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 0
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 11400000}
-          name: 
-          isNotCollapsed: 1
-          primaryInputIndex: 2
-          states:
-          - data: {fileID: 11400000}
-            state:
-              data: {fileID: 11400000}
-              overrideInputIndex: 0
-              name: 
-              value: 0
-              linkedInputOptionIndex: 0
-              isNotCollapsed: 0
-              motion: {fileID: 0}
-            stateMachine:
-              data: {fileID: 0}
-              name: 
-              isNotCollapsed: 0
-              primaryInputIndex: 0
-              states: []
-              controllerStateMachine: {fileID: 0}
-              overrideExistingStateMachine: 0
-            type: 0
-          - data: {fileID: 11400000}
-            state:
-              data: {fileID: 11400000}
-              overrideInputIndex: 0
-              name: 
-              value: 0
-              linkedInputOptionIndex: 1
-              isNotCollapsed: 0
-              motion: {fileID: 0}
-            stateMachine:
-              data: {fileID: 0}
-              name: 
-              isNotCollapsed: 0
-              primaryInputIndex: 0
-              states: []
-              controllerStateMachine: {fileID: 0}
-              overrideExistingStateMachine: 0
-            type: 0
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 1
-        type: 1
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: -1
-          isNotCollapsed: 1
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      controllerStateMachine: {fileID: 0}
-      overrideExistingStateMachine: 1
-  - data: {fileID: 11400000}
-    stateMachine:
-      data: {fileID: 11400000}
-      name: 
-      isNotCollapsed: 0
-      primaryInputIndex: 1
-      states:
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 0
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 1
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: 2
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: -1
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      - data: {fileID: 11400000}
-        state:
-          data: {fileID: 11400000}
-          overrideInputIndex: 0
-          name: 
-          value: 0
-          linkedInputOptionIndex: -1
-          isNotCollapsed: 0
-          motion: {fileID: 0}
-        stateMachine:
-          data: {fileID: 0}
-          name: 
-          isNotCollapsed: 0
-          primaryInputIndex: 0
-          states: []
-          controllerStateMachine: {fileID: 0}
-          overrideExistingStateMachine: 0
-        type: 0
-      controllerStateMachine: {fileID: 0}
-      overrideExistingStateMachine: 1
-  - data: {fileID: 11400000}
-    stateMachine:
-      data: {fileID: 11400000}
-      name: 
+      name: OwO
       isNotCollapsed: 1
       primaryInputIndex: 0
       states: []
       controllerStateMachine: {fileID: 0}
-      overrideExistingStateMachine: 1
+      overrideExistingStateMachine: 0
   inputs:
   - data: {fileID: 11400000}
     isNotCollapsed: 1
@@ -304,69 +34,45 @@ MonoBehaviour:
     defaultInt: 0
     defaultBool: 0
     defaultOptionIndex: 0
+    saved: 1
   - data: {fileID: 11400000}
     isNotCollapsed: 1
     parameterName: Second Input
-    previousType: 1
+    previousType: 4
     type: 1
-    options:
-    - name: one
-      intValue: 0
-      floatValue: 0
-    - name: two
-      intValue: 0
-      floatValue: 1
-    - name: three
-      intValue: 0
-      floatValue: 2
+    options: []
     defaultFloat: 0
     defaultInt: 0
     defaultBool: 0
     defaultOptionIndex: 0
+    saved: 1
   - data: {fileID: 11400000}
     isNotCollapsed: 1
     parameterName: What are you doing stepbro
-    previousType: 3
+    previousType: 4
     type: 3
-    options:
-    - name: aba
-      intValue: 0
-      floatValue: 0
-    - name: ara
-      intValue: 1
-      floatValue: 0
+    options: []
     defaultFloat: 0
     defaultInt: 0
     defaultBool: 0
     defaultOptionIndex: 0
+    saved: 1
   - data: {fileID: 11400000}
     isNotCollapsed: 1
     parameterName: OwO
-    previousType: 1
+    previousType: 4
     type: 1
-    options:
-    - name: uwu
-      intValue: 0
-      floatValue: 0
-    - name: awa
-      intValue: 0
-      floatValue: 1
-    - name: ama
-      intValue: 0
-      floatValue: 2
-    - name: rawr
-      intValue: 0
-      floatValue: 3
-    - name: blep
-      intValue: 0
-      floatValue: 4
+    options: []
     defaultFloat: 0
     defaultInt: 0
     defaultBool: 0
     defaultOptionIndex: 0
+    saved: 1
   tab1scroll: {x: 0, y: 0}
-  tab2scroll: {x: 0, y: 177}
+  tab2scroll: {x: 0, y: 0}
   tab4scroll: {x: 0, y: 0}
+  tab5scroll: {x: 0, y: 0}
   backupAnimatorControllers: []
   savePathCat: 0
   customSavePath: 
+  mainMenu: {fileID: 11400000, guid: aba50a610448bcd4f8709988e6a58122, type: 2}

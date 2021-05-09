@@ -14,6 +14,8 @@ namespace AnimatorManager.Scripts.Editor {
 
 		//Misc
 		public int backupCount;
+		public bool useSmallTextureInput;
+		
 		public string SavedDataPath {
 			get {
 				return Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AssetDatabase.GetAssetPath(this))), "SavedData") + Path.DirectorySeparatorChar;

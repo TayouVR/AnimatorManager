@@ -1,14 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using VRC.SDK3.Avatars.ScriptableObjects;
 using ReorderableList = UnityEditorInternal.ReorderableList;
 using AnimatorControllerParameterType = UnityEngine.AnimatorControllerParameterType;
 
 namespace AnimatorManager.Scripts.Editor {
 
-	[CreateAssetMenu(fileName = "New Animator Manager Data", menuName = "Animator Manager/Animator Data", order = 0)]
+	//[CreateAssetMenu(fileName = "New Animator Manager Data", menuName = "Animator Manager/Animator Data", order = 0)]
 	public class Data : ScriptableObject {
 		[SerializeField]public AnimatorController referenceAnimator;
 
@@ -21,13 +23,14 @@ namespace AnimatorManager.Scripts.Editor {
 		public Vector2 tab1scroll;
 		public Vector2 tab2scroll;
 		public Vector2 tab4scroll;
+		public Vector2 tab5scroll;
 
 		public List<string> backupAnimatorControllers = new List<string>();
 
 		public AnimationSavePathCat savePathCat;
 		public string customSavePath;
 
-		private void OnEnable() {
+			private void OnEnable() {
 			
 			// Testing entries
 			/*
@@ -71,6 +74,9 @@ namespace AnimatorManager.Scripts.Editor {
                 if (entity.type == AnimatorControllerParameterType.Float || entity.type == AnimatorControllerParameterType.Int) {
                     height += entity.OptionsRList.GetHeight();
                 }
+#if VRC_SDK_VRCSDK3
+	            height += EditorGUIUtility.singleLineHeight * 1.25f;
+#endif
                 
                 height += EditorGUIUtility.singleLineHeight * 0.5f;
             }
@@ -138,6 +144,13 @@ namespace AnimatorManager.Scripts.Editor {
                     default:
                         break;
                 }
+
+#if VRC_SDK_VRCSDK3
+	            rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
+	            _rect = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+	            entity.saved = EditorGUI.Toggle(_rect, "Saved", entity.saved);
+#endif
+                
                 if (entity.OptionsRList != null && (entity.type == AnimatorControllerParameterType.Float || entity.type == AnimatorControllerParameterType.Int)) {
                     rect.y += EditorGUIUtility.singleLineHeight * 1.25f;
                     _rect = new Rect(rect.x, rect.y, rect.width, entity.OptionsRList.GetHeight());
@@ -388,6 +401,85 @@ namespace AnimatorManager.Scripts.Editor {
 				}
 			}
 		}
+
+		public Input FindInputByName(string name) {
+			foreach (var input in inputs) {
+				if (input.Name.Equals(name)) {
+					return input;
+				}
+			}
+			return null;
+		}
+
+		// ##################### VRC SDK3 ####################### //
+
+		
+#if VRC_SDK_VRCSDK3
+		public VRCExpressionsMenu mainMenu;
+		
+		public int CalcTotalCost()
+		{
+			int num = 0;
+			foreach (Input parameter in this.inputs)
+				num += TypeCost(parameter.type);
+			return num;
+		}
+
+		public static int TypeCost(AnimatorControllerParameterType type) => type == AnimatorControllerParameterType.Int || type != AnimatorControllerParameterType.Bool ? 8 : 1;
+		
+		public void InitExpressionParameters(bool populateWithDefault) {
+			var expressionParameters = inputs;
+			if (populateWithDefault) {
+				expressionParameters.Clear();
+
+				Input input1 = new Input(this);
+				input1.Name = "VRCEmote";
+				input1.type = AnimatorControllerParameterType.Int;
+
+				Input input2 = new Input(this);
+				input2.Name = "VRCFaceBlendH";
+				input2.type = AnimatorControllerParameterType.Float;
+
+				Input input3 = new Input(this);
+				input3.Name = "VRCFaceBlendV";
+				input3.type = AnimatorControllerParameterType.Float;
+				
+				expressionParameters.Add(input1);
+				expressionParameters.Add(input2);
+				expressionParameters.Add(input3);
+			} else {
+				//Empty
+				expressionParameters.Clear();
+			}
+		}
+        
+        // ############### VRC Expression Menus ################ //
+        
+        public void DrawVRCMainMenu() {
+	        new VRCExpressionsMenuWrapper(mainMenu, this).MenuList.DoLayoutList();
+        }
+        
+        private float ExpressionMenuElementHeightCallback(int index) {
+            var entity = layers[index];
+
+            float height = EditorGUIUtility.singleLineHeight * 1.25f;
+            
+            if (entity.stateMachine.isNotCollapsed) {
+                height += EditorGUIUtility.singleLineHeight * 1.25f;
+                height += EditorGUIUtility.singleLineHeight * 1.25f;
+                height += entity.stateMachine.StatesRList.GetHeight();
+                
+                height += EditorGUIUtility.singleLineHeight * 0.5f;
+            }
+
+            return height;
+        }
+
+        private void DrawExpressionMenuElementCallback(Rect rect, int index, bool isactive, bool isfocused) {
+            var entity = mainMenu.controls[index];
+            
+        }
+#endif
 	}
 
 	public enum AnimationSavePathCat {
