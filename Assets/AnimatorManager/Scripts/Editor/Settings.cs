@@ -14,7 +14,7 @@ namespace AnimatorManager.Scripts.Editor {
 
 		//Misc
 		public int backupCount;
-		public bool useSmallTextureInput;
+		public bool useSmallTextureInput = true;
 		
 		public string SavedDataPath {
 			get {

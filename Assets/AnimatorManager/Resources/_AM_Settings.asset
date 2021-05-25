@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: _AM_Settings
   m_EditorClassIdentifier: 
   data: {fileID: 0}
-  selectedTab: 4
+  selectedTab: 2
   tab3scroll: {x: 0, y: 0}
   get1stInputFromCommonCondition: 0
   backupCount: 0

@@ -22,7 +22,7 @@ MonoBehaviour:
       primaryInputIndex: 0
       states: []
       controllerStateMachine: {fileID: 0}
-      overrideExistingStateMachine: 0
+      overrideExistingStateMachine: 1
   inputs:
   - data: {fileID: 11400000}
     isNotCollapsed: 1
@@ -38,7 +38,7 @@ MonoBehaviour:
   - data: {fileID: 11400000}
     isNotCollapsed: 1
     parameterName: Second Input
-    previousType: 4
+    previousType: 1
     type: 1
     options: []
     defaultFloat: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   - data: {fileID: 11400000}
     isNotCollapsed: 1
     parameterName: What are you doing stepbro
-    previousType: 4
+    previousType: 3
     type: 3
     options: []
     defaultFloat: 0
@@ -60,7 +60,7 @@ MonoBehaviour:
   - data: {fileID: 11400000}
     isNotCollapsed: 1
     parameterName: OwO
-    previousType: 4
+    previousType: 1
     type: 1
     options: []
     defaultFloat: 0

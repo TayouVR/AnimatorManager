@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -133,10 +133,16 @@ namespace AnimatorManager.Scripts.Editor {
                     settingsAsset.data.inputlist.DoLayoutList();
                     EditorGUILayout.EndScrollView();
                 }
+        
+                if (settingsAsset.selectedTab == 3) {
+                    settingsAsset.data.tab4scroll = EditorGUILayout.BeginScrollView(settingsAsset.data.tab4scroll);
+                    settingsAsset.data.DrawSettings();
+                    EditorGUILayout.EndScrollView();
+                }
 #if VRC_SDK_VRCSDK3
                 if (settingsAsset.selectedTab == 4) {
                     settingsAsset.data.tab5scroll = EditorGUILayout.BeginScrollView(settingsAsset.data.tab5scroll);
-                    settingsAsset.data.mainMenu = (VRCExpressionsMenu)EditorGUILayout.ObjectField("Main Menu", settingsAsset.data.mainMenu, typeof(VRCExpressionsMenu));
+                    settingsAsset.data.mainMenu = (VRCExpressionsMenu)EditorGUILayout.ObjectField("Main Menu", settingsAsset.data.mainMenu, typeof(VRCExpressionsMenu), true);
                     if (settingsAsset.data.mainMenu != null) {
                         settingsAsset.data.DrawVRCMainMenu();
                     }
@@ -162,7 +168,9 @@ namespace AnimatorManager.Scripts.Editor {
                 // misc
                 EditorGUILayout.LabelField("Misc", Styles.HeaderLabel);
                 settingsAsset.backupCount = EditorGUILayout.IntField("Number of Backups", settingsAsset.backupCount);
-                settingsAsset.useSmallTextureInput = EditorGUILayout.Toggle("Use Small Texture Input", settingsAsset.useSmallTextureInput);
+                GUI.enabled = false;
+                settingsAsset.useSmallTextureInput = EditorGUILayout.Toggle(new GUIContent("Use Small Texture Input", "Currently disabled because it did not work"), settingsAsset.useSmallTextureInput);
+                GUI.enabled = true;
                 if (GUILayout.Button("Clear ALL Animator Data")) {
                     if (EditorUtility.DisplayDialog("Clear ALL Animator Data", "Do you really want to clear ALL Animator Data?\n" +
                                                                            "The original Animators will not be touched.\n" +
@@ -170,12 +178,6 @@ namespace AnimatorManager.Scripts.Editor {
                         DeleteAllDataAssets();
                     }
                 }
-                EditorGUILayout.EndScrollView();
-            }
-        
-            if (settingsAsset.selectedTab == 3) {
-                settingsAsset.data.tab4scroll = EditorGUILayout.BeginScrollView(settingsAsset.data.tab4scroll);
-                settingsAsset.data.DrawSettings();
                 EditorGUILayout.EndScrollView();
             }
             GUILayout.EndArea();

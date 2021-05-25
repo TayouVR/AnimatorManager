@@ -267,6 +267,35 @@ namespace AnimatorManager.Scripts.Editor {
 		public string[] GetInputNames() {
 			return inputs.Select(input => input.Name).ToArray();
 		}
+
+		public void Reset() {
+			Clear();
+			LoadAnimator(referenceAnimator);
+		}
+
+		public void Clear() {
+			inputs.Clear();
+			layers.Clear();
+		}
+
+		public void DrawSettings() {
+			savePathCat = (AnimationSavePathCat)EditorGUILayout.EnumPopup(savePathCat);
+			if (savePathCat == AnimationSavePathCat.Custom) {
+				customSavePath = EditorGUILayout.TextField(customSavePath);
+				if (GUILayout.Button("Select")) {
+					customSavePath = EditorUtility.OpenFolderPanel("Select path for new Animation Clips", "", "Animations");
+				}
+			}
+		}
+
+		public Input FindInputByName(string name) {
+			foreach (var input in inputs) {
+				if (input.Name.Equals(name)) {
+					return input;
+				}
+			}
+			return null;
+		}
         
 		// ####################### load ######################### //
 		
@@ -291,6 +320,7 @@ namespace AnimatorManager.Scripts.Editor {
 		}
 
 		private StateMachine Load_AddStatesToStateMachine(AnimatorStateMachine stateMachine) {
+			if (stateMachine == null) return null;
 			StateMachine returnStateMachine = new StateMachine(this);
 			returnStateMachine.Name = stateMachine.name;
 			returnStateMachine.controllerStateMachine = stateMachine;
@@ -380,35 +410,6 @@ namespace AnimatorManager.Scripts.Editor {
 			}
 
 			return controllerStateMachine;
-		}
-
-		public void Reset() {
-			Clear();
-			LoadAnimator(referenceAnimator);
-		}
-
-		public void Clear() {
-			inputs.Clear();
-			layers.Clear();
-		}
-
-		public void DrawSettings() {
-			savePathCat = (AnimationSavePathCat)EditorGUILayout.EnumPopup(savePathCat);
-			if (savePathCat == AnimationSavePathCat.Custom) {
-				customSavePath = EditorGUILayout.TextField(customSavePath);
-				if (GUILayout.Button("Select")) {
-					customSavePath = EditorUtility.OpenFolderPanel("Select path for new Animation Clips", "", "Animations");
-				}
-			}
-		}
-
-		public Input FindInputByName(string name) {
-			foreach (var input in inputs) {
-				if (input.Name.Equals(name)) {
-					return input;
-				}
-			}
-			return null;
 		}
 
 		// ##################### VRC SDK3 ####################### //
