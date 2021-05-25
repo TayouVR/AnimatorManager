@@ -45,7 +45,7 @@ namespace AnimatorManager.Scripts.Editor {
         private void LoadSettings() {
             if (settingsAsset is null) {
                 settingsAsset = Resources.Load<Settings>("_AM_Settings");
-                Debug.Log("Settings Loaded:\n" + settingsAsset);
+                Debug.Log("[<color=#00DDDD>AnimatorManager</color>] Settings Loaded:\n" + settingsAsset);
             }
         }
 
@@ -54,11 +54,11 @@ namespace AnimatorManager.Scripts.Editor {
             if (foundDatas.Count == 0) return null;
             foreach (var animatorData in foundDatas) {
                 if (animatorData.referenceAnimator == controller) {
-                    Debug.Log(AssetDatabase.GetAssetPath(animatorData));
+                    Debug.Log("[<color=#00DDDD>AnimatorManager</color>] " + AssetDatabase.GetAssetPath(animatorData));
                     if (String.IsNullOrEmpty(AssetDatabase.GetAssetPath(animatorData))) {
                         string pathToAsset = AssetDatabase.GenerateUniqueAssetPath(settingsAsset.SavedDataPath + controller.name + ".asset");
                         AssetDatabase.CreateAsset(animatorData, pathToAsset);
-                        Debug.Log("SHOULD SAVE ASSET HERE: " + pathToAsset);
+                        Debug.Log("[<color=#00DDDD>AnimatorManager</color>] SHOULD SAVE ASSET HERE: " + pathToAsset);
                     }
                     return animatorData;
                 }
@@ -262,7 +262,7 @@ namespace AnimatorManager.Scripts.Editor {
                 settingsAsset.data = CreateInstance<Data>();
                 string pathToAsset = AssetDatabase.GenerateUniqueAssetPath(settingsAsset.SavedDataPath + anim.name + ".asset");
                 AssetDatabase.CreateAsset(settingsAsset.data, pathToAsset);
-                Debug.Log("SHOULD SAVE ASSET HERE: " + pathToAsset);
+                Debug.Log("[<color=#00DDDD>AnimatorManager</color>] SHOULD SAVE ASSET HERE: " + pathToAsset);
                 settingsAsset.data.LoadAnimator(anim);
             } else {
                 settingsAsset.data = dat;

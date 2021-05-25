@@ -135,7 +135,7 @@ namespace AnimatorManager.Scripts.Editor {
 					options[index].intValue = EditorGUI.IntField(_rect, options[index].intValue);
 					break;
 				default:
-					Debug.Log("Wrong Type");
+					Debug.Log("[<color=#00DDDD>AnimatorManager</color>] Wrong Type");
 					break;
 			}
 		}
@@ -154,7 +154,7 @@ namespace AnimatorManager.Scripts.Editor {
 							names.Add(option.intValue.ToString());
 							break;
 						default:
-							Debug.Log("Wrong Type");
+							Debug.Log("[<color=#00DDDD>AnimatorManager</color>] Wrong Type");
 							break;
 					}
 				}else {

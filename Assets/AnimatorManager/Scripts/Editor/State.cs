@@ -9,17 +9,17 @@ namespace AnimatorManager.Scripts.Editor {
 		public string name;
 		public string Name {
 			get {
-				//Debug.Log("Input: " + stateMachinePrimaryInputIndex + "\nInput Option: " + linkedInputOptionIndex);
-				//Debug.Log("Input Count: " + data.inputs.Count + "\nInput Option Count: " + data.inputs[stateMachinePrimaryInputIndex].options.Count);
+				//Debug.Log("[<color=#00DDDD>AnimatorManager</color>] Input: " + stateMachinePrimaryInputIndex + "\nInput Option: " + linkedInputOptionIndex);
+				//Debug.Log("[<color=#00DDDD>AnimatorManager</color>] Input Count: " + data.inputs.Count + "\nInput Option Count: " + data.inputs[stateMachinePrimaryInputIndex].options.Count);
 				if (linkedInputOptionIndex > -1) {
 					if (data.inputs.Count > stateMachinePrimaryInputIndex) {
 						if (data.inputs[stateMachinePrimaryInputIndex].options.Count > linkedInputOptionIndex) {
 							return data.inputs[stateMachinePrimaryInputIndex].options[linkedInputOptionIndex].name;
 						}
-						Debug.Log("Input Option out of range for State");
+						Debug.Log("[<color=#00DDDD>AnimatorManager</color>] Input Option out of range for State");
 						return "State " + stateNumber;
 					}
-					Debug.Log("Input out of range for State");
+					Debug.Log("[<color=#00DDDD>AnimatorManager</color>] Input out of range for State");
 					return "State " + stateNumber;
 				} else if (string.IsNullOrEmpty(name)) {
 					return "State " + stateNumber;
