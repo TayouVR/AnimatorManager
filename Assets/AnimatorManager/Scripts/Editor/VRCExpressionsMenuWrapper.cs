@@ -26,7 +26,7 @@ namespace AnimatorManager.Scripts.Editor {
 		private void InitList() {
 			if (menuList is null) {
 				for (var i = 0; i < menu.controls.Count; i++) {
-					controls.Add(new VRCMenuControlProxy(menu.controls[i]));
+					controls.Add(new VRCMenuControlProxy(menu.controls[i], data));
 				}
 
 				menuList = new ReorderableList(controls, typeof(VRCMenuControlProxy));
@@ -44,7 +44,7 @@ namespace AnimatorManager.Scripts.Editor {
 		private void ONAddCallback(ReorderableList list) {
 			VRCExpressionsMenu.Control control = new VRCExpressionsMenu.Control();
 			menu.controls.Add(control);
-			controls.Add(new VRCMenuControlProxy(control));
+			controls.Add(new VRCMenuControlProxy(control, data));
 		}
 
 		private float ElementHeightCallback(int index) {

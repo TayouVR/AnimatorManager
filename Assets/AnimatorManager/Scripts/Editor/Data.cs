@@ -4,9 +4,12 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
-using VRC.SDK3.Avatars.ScriptableObjects;
 using ReorderableList = UnityEditorInternal.ReorderableList;
 using AnimatorControllerParameterType = UnityEngine.AnimatorControllerParameterType;
+
+#if VRC_SDK_VRCSDK3
+using VRC.SDK3.Avatars.ScriptableObjects;
+#endif
 
 namespace AnimatorManager.Scripts.Editor {
 

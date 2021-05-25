@@ -1,20 +1,22 @@
-﻿using System;
+﻿#if VRC_SDK_VRCSDK3
+using System;
 using UnityEngine;
 using VRC.SDK3.Avatars.ScriptableObjects;
 
-#if VRC_SDK_VRCSDK3
 namespace AnimatorManager.Scripts.Editor {
 	public class VRCMenuControlProxy : VRCExpressionsMenu.Control {
 
 		public VRCExpressionsMenu.Control reference;
 		public VRCExpressionsMenuWrapper subMenuWrapper;
+		private Data data;
 
 		public bool isExpanded = true;
 
-		public VRCMenuControlProxy(VRCExpressionsMenu.Control reference) {
+		public VRCMenuControlProxy(VRCExpressionsMenu.Control reference, Data data) {
 			this.reference = reference;
+			this.data = data;
 		}
-
+		
 		public Texture2D Icon {
 			set => reference.icon = value;
 			get => reference.icon;
@@ -38,7 +40,15 @@ namespace AnimatorManager.Scripts.Editor {
 		}
 
 		public VRCExpressionsMenu SubMenu {
-			set => reference.subMenu = value;
+			set {
+				reference.subMenu = value;
+				if (value != null) {
+					subMenuWrapper = new VRCExpressionsMenuWrapper(value, data);
+				}
+				else {
+					subMenuWrapper = null;
+				}
+			}
 			get => reference.subMenu;
 		}
 
