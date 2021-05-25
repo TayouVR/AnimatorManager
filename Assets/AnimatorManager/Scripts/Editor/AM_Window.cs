@@ -1,6 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 using AnimatorController = UnityEditor.Animations.AnimatorController;
@@ -68,9 +70,16 @@ namespace AnimatorManager.Scripts.Editor {
         }
 
         private void OnEnable() {
-            vrcSDKfound = PlayerSettings.GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone).Contains("VRC_SDK_VRCSDK3");
+            var scriptingDefineSymbols = GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
+            vrcSDKfound = scriptingDefineSymbols.Contains("VRC_SDK_VRCSDK3");
             cvrCCKfound = AssetDatabase.FindAssets("CCK_CVRAvatarEditor", null).Length > 0;
-            
+            if (cvrCCKfound && !scriptingDefineSymbols.Contains("CVR_CCK_EXISTS")) {
+                scriptingDefineSymbols.Add("CVR_CCK_EXISTS");
+                SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, scriptingDefineSymbols);
+            } else if (!cvrCCKfound && scriptingDefineSymbols.Contains("CVR_CCK_EXISTS")) {
+                scriptingDefineSymbols.Remove("CVR_CCK_EXISTS");
+                SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone, scriptingDefineSymbols);
+            }
             LoadSettings();
         }
         
@@ -268,6 +277,49 @@ namespace AnimatorManager.Scripts.Editor {
                 settingsAsset.data = dat;
                 source = dat.referenceAnimator;
             }
+        }
+
+        public static List<string> GetScriptingDefineSymbolsForGroup(BuildTargetGroup buildTargetGroup)
+        {
+            List<string> symbols = new List<string>();
+            try
+            {
+                string defineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+                string[] array = defineSymbols.Split(';');
+                if(array != null && array.Length > 0) symbols.AddRange(array);
+            }
+            catch(System.Exception)
+            {
+            }
+            return symbols;
+        }
+
+        public static void SetScriptingDefineSymbolsForGroup(BuildTargetGroup buildTargetGroup, List<string> symbols)
+        {
+            symbols = CleanList(symbols);
+            string symbolsString = string.Empty;
+            if(symbols != null && symbols.Count > 0)
+            {
+                for(int i = 0; i < symbols.Count; i++)
+                {
+                    if(!string.IsNullOrEmpty(symbols[i]))
+                        symbolsString += symbols[i] + ";";
+                }
+            }
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, symbolsString);
+        }
+
+        /// <summary>
+        /// Cleans the given list by removing any whitespaces, any duplicates and any empty entries
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static List<string> CleanList(List<string> list)
+        {
+            for(int i = 0; i < list.Count; i++) list[i] = Regex.Replace(list[i], @"\s+", ""); //remove whitespaces
+            list = list.Distinct().ToList(); //remove duplicates
+            list.RemoveAll(s => string.IsNullOrEmpty(s.Trim())); //remove empty entries
+            return list;
         }
     }
 }
