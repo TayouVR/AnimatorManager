@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caba58e8f0ab49f8b583ddcb9c458e43, type: 3}
   m_Name: _AM_Settings
   m_EditorClassIdentifier: 
-  data: {fileID: 0}
-  selectedTab: 2
+  data: {fileID: 11400000, guid: 9b1a734cd92bccc4a8b153922f1e2cfe, type: 2}
+  selectedTab: 1
   tab3scroll: {x: 0, y: 0}
   get1stInputFromCommonCondition: 0
   backupCount: 0

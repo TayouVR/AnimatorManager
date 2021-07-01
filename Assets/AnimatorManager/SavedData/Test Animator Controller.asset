@@ -19,7 +19,70 @@ MonoBehaviour:
       data: {fileID: 11400000}
       name: OwO
       isNotCollapsed: 1
-      primaryInputIndex: 0
+      primaryInputIndex: 1
+      states:
+      - data: {fileID: 11400000}
+        state:
+          data: {fileID: 11400000}
+          overrideInputIndex: 0
+          name: 
+          value: 0
+          linkedInputOptionIndex: 0
+          isNotCollapsed: 0
+          motion: {fileID: 0}
+        stateMachine:
+          data: {fileID: 0}
+          name: 
+          isNotCollapsed: 0
+          primaryInputIndex: 0
+          states: []
+          controllerStateMachine: {fileID: 0}
+          overrideExistingStateMachine: 0
+        type: 0
+      - data: {fileID: 11400000}
+        state:
+          data: {fileID: 11400000}
+          overrideInputIndex: 0
+          name: 
+          value: 0
+          linkedInputOptionIndex: 1
+          isNotCollapsed: 0
+          motion: {fileID: 0}
+        stateMachine:
+          data: {fileID: 0}
+          name: 
+          isNotCollapsed: 0
+          primaryInputIndex: 0
+          states: []
+          controllerStateMachine: {fileID: 0}
+          overrideExistingStateMachine: 0
+        type: 0
+      - data: {fileID: 11400000}
+        state:
+          data: {fileID: 11400000}
+          overrideInputIndex: 0
+          name: 
+          value: 0
+          linkedInputOptionIndex: 2
+          isNotCollapsed: 0
+          motion: {fileID: 0}
+        stateMachine:
+          data: {fileID: 0}
+          name: 
+          isNotCollapsed: 0
+          primaryInputIndex: 0
+          states: []
+          controllerStateMachine: {fileID: 0}
+          overrideExistingStateMachine: 0
+        type: 0
+      controllerStateMachine: {fileID: 0}
+      overrideExistingStateMachine: 1
+  - data: {fileID: 11400000}
+    stateMachine:
+      data: {fileID: 11400000}
+      name: 
+      isNotCollapsed: 1
+      primaryInputIndex: 2
       states: []
       controllerStateMachine: {fileID: 0}
       overrideExistingStateMachine: 1
@@ -40,7 +103,16 @@ MonoBehaviour:
     parameterName: Second Input
     previousType: 1
     type: 1
-    options: []
+    options:
+    - name: 
+      intValue: 0
+      floatValue: 0
+    - name: 
+      intValue: 0
+      floatValue: 1
+    - name: 
+      intValue: 0
+      floatValue: 2
     defaultFloat: 0
     defaultInt: 0
     defaultBool: 0
@@ -69,7 +141,7 @@ MonoBehaviour:
     defaultOptionIndex: 0
     saved: 1
   tab1scroll: {x: 0, y: 0}
-  tab2scroll: {x: 0, y: 0}
+  tab2scroll: {x: 0, y: 1}
   tab4scroll: {x: 0, y: 0}
   tab5scroll: {x: 0, y: 0}
   backupAnimatorControllers: []

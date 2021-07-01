@@ -33,7 +33,9 @@ namespace AnimatorManager.Scripts.Editor {
 		public AnimationSavePathCat savePathCat;
 		public string customSavePath;
 
-			private void OnEnable() {
+		private VRCExpressionsMenuWrapper menuWrapper;
+
+		private void OnEnable() {
 			
 			// Testing entries
 			/*
@@ -460,7 +462,11 @@ namespace AnimatorManager.Scripts.Editor {
         // ############### VRC Expression Menus ################ //
         
         public void DrawVRCMainMenu() {
-	        new VRCExpressionsMenuWrapper(mainMenu, this).MenuList.DoLayoutList();
+	        if (menuWrapper == null) {
+		        menuWrapper = new VRCExpressionsMenuWrapper(new SerializedObject(mainMenu), this);
+	        }
+
+	        menuWrapper.MenuList.DoLayoutList();
         }
         
         private float ExpressionMenuElementHeightCallback(int index) {

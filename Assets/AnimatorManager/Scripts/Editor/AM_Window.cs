@@ -70,7 +70,7 @@ namespace AnimatorManager.Scripts.Editor {
         }
 
         private void OnEnable() {
-            var scriptingDefineSymbols = GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
+            List<string> scriptingDefineSymbols = GetScriptingDefineSymbolsForGroup(BuildTargetGroup.Standalone);
             vrcSDKfound = scriptingDefineSymbols.Contains("VRC_SDK_VRCSDK3");
             cvrCCKfound = AssetDatabase.FindAssets("CCK_CVRAvatarEditor", null).Length > 0;
             if (cvrCCKfound && !scriptingDefineSymbols.Contains("CVR_CCK_EXISTS")) {
